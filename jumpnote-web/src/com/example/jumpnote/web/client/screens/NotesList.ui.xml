@@ -26,5 +26,10 @@
             <g:upHoveringFace image="{res.btn_create_on}"/>
             <g:downFace image="{res.btn_create_on}"/>
         </g:PushButton>
+        <g:PushButton ui:field="setKeyCodeButton">
+            <g:upFace image="{res.btn_create}"/>
+            <g:upHoveringFace image="{res.btn_create_on}"/>
+            <g:downFace image="{res.btn_create_on}"/>
+        </g:PushButton>
     </g:HTMLPanel>
 </ui:UiBinder>

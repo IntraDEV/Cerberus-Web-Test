@@ -2,6 +2,10 @@ package com.example.jumpnote.web.client.code;
 
 import java.util.Date;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import com.example.jumpnote.allshared.Model;
 import com.example.jumpnote.web.client.ModelJso;
 import com.google.gwt.json.client.JSONObject;
@@ -19,7 +23,7 @@ public class EncodedNote {
 	
 	public EncodedNote(String title, String body) {
 		
-		
+
 
     	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
     	String newTitle = nd.encodeTitle(title);

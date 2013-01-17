@@ -64,6 +64,12 @@ public class JumpNoteWeb implements EntryPoint {
     public static Map<String, EncodedNote> sNotes = new HashMap<String, EncodedNote>();
     public static ModelJso.UserInfo sUserInfo = null;
     
+    private static boolean isValidKeyPass = false;
+    
+    public static boolean isKeyPassValid () {
+    	return isValidKeyPass;
+    }
+    
     
     private static class MyPopup extends PopupPanel {
 
@@ -110,14 +116,31 @@ public class JumpNoteWeb implements EntryPoint {
         listener = new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				popup.hide();
+				
 				String passcode = ptb.getValue();
+				
+				//Check that passcode is not zero
+				//if the passcode is not zero
+					//If there are notes
+						//Perform a sample check that any existing notes can be decoded
+						//If the passcode is valid
+						//install the non-default note decode
+						//Hide the glass
+					//If there are no notes
+						//install the non-default note decode
+						//Hide the glass
+				//Else in all cases
+					//Stay in glass mode
+					//Display an error message
+				
 				
 				NoteDecoderFactory.installNoteDecoder(passcode);
 				
 				
 				NotesList nw=(NotesList)mScreenContainer.getScreenByName("home");
 				nw.refreshNotes();
+				
+				popup.hide();
 			}
         };
         
@@ -137,8 +160,6 @@ public class JumpNoteWeb implements EntryPoint {
         popup.setWidget(popUpPanelContents);
 
         
-        // Position the popup 1/3rd of the way down and across the screen, and
-        // show the popup. 
         popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
           public void setPosition(int offsetWidth, int offsetHeight) {
             int left = (Window.getClientWidth() - offsetWidth) / 2;
@@ -168,8 +189,7 @@ public class JumpNoteWeb implements EntryPoint {
                     mScreenContainer.setDefault("home");
                     mScreenContainer.install(RootPanel.get("screenPanel"));
                     
-                    
-                    
+                                        
                     //My attempts to get a passcode from the user
                     {
                     	displayPasswordStoreLockKeyQuery();
@@ -190,9 +210,7 @@ public class JumpNoteWeb implements EntryPoint {
 
         final RootPanel loginPanel = RootPanel.get("loginPanel");
         calls.add(new Call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams));
-        {
-        	calls.add(new Call(JumpNoteProtocol.NotesList.METHOD, null));
-        }
+        calls.add(new Call(JumpNoteProtocol.NotesList.METHOD, null));
 
         sJsonRpcClient.callBatch(calls, new JsonRpcClient.BatchCallback() {
             public void onData(Object[] data) {
@@ -216,6 +234,20 @@ public class JumpNoteWeb implements EntryPoint {
                     sLoginUrl = userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
                     Anchor anchor = new Anchor("Sign in", sLoginUrl);
                     loginPanel.add(anchor);
+                }
+                
+                {
+                	if (isValidKeyPass == false) {
+                		ClickHandler listener = new ClickHandler() {
+                			@Override
+                			public void onClick(ClickEvent event) {
+                				displayPasswordStoreLockKeyQuery();
+                			}
+                        };
+                        
+                        Button button = new Button("Set Keycode", listener);
+                        loginPanel.add(button);
+                	}
                 }
 
                 {

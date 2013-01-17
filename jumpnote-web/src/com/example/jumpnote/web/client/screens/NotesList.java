@@ -59,6 +59,9 @@ public class NotesList extends Screen {
 
     @UiField
     PushButton createButton;
+    
+    @UiField
+    PushButton setKeyCodeButton;
 
     public NotesList() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -68,6 +71,12 @@ public class NotesList extends Screen {
     @UiHandler("createButton")
     void onClick(ClickEvent e) {
         History.newItem("note");
+    }
+    
+    @UiHandler("setKeyCodeButton")
+    void onSetKeyCodeButton(ClickEvent e) {
+        //History.newItem("note");
+    	JumpNoteWeb.showMessage("Did it!", true);
     }
 
     public void refreshNotes() {

@@ -185,7 +185,7 @@ h2, .big-text {
 }
 
 /* Android download and QR link */
-
+/* This section has been removed from the main web page
 #android-download-link {
 	display: block;
 	text-align: center;
@@ -225,7 +225,7 @@ h2, .big-text {
 	display: inline-block;
 	vertical-align: top;
 }
-
+*/
 
 /* TODO: update the popup CSS to make it nicer */
 
