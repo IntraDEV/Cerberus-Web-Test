@@ -198,7 +198,95 @@ public class JumpNoteWeb implements EntryPoint {
             }
         });
     }
+    
+    
+    private final int STATE_INITIAL = 0;
+    private final int STATE_REQUESTING_USERINFO = 1;
+    private final int STATE_NEED_LOGIN = 2;
+    private final int STATE_REQUESTING_NEED_LOGIN = 2;
+    
+    
 
+    public void getUserLoginCookie(final Runnable callback) {
+    	
+        List<Call> calls = new ArrayList<Call>();
+
+        // Get and populate login information
+        JSONObject userInfoParams = new JSONObject();
+        userInfoParams.put(JumpNoteProtocol.UserInfo.ARG_LOGIN_CONTINUE,
+                new JSONString(Window.Location.getHref()));
+
+        final RootPanel loginPanel = RootPanel.get("loginPanel");
+        calls.add(new Call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams));
+        calls.add(new Call(JumpNoteProtocol.NotesList.METHOD, null));
+
+        sJsonRpcClient.call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams, callback)
+        
+        sJsonRpcClient.callBatch(calls, new JsonRpcClient.BatchCallback() {
+            public void onData(Object[] data) {
+                // Process userInfo RPC call results
+                JSONObject userInfoJson = (JSONObject) data[0];
+                if (userInfoJson.containsKey(JumpNoteProtocol.UserInfo.RET_USER)) {
+                    JumpNoteWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
+                            JumpNoteProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
+                    InlineLabel label = new InlineLabel();
+                    label.getElement().setId("userNameLabel");
+                    label.setText(sUserInfo.getNick());
+                    loginPanel.add(label);
+
+                    loginPanel.add(new InlineLabel(" | "));
+
+                    Anchor anchor = new Anchor("Sign out",
+                            userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGOUT_URL).isString()
+                            .stringValue());
+                    loginPanel.add(anchor);
+                } else {
+                    sLoginUrl = userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
+                    Anchor anchor = new Anchor("Sign in", sLoginUrl);
+                    loginPanel.add(anchor);
+                }
+                
+//                {
+//                	if (isValidKeyPass == false) {
+//                		ClickHandler listener = new ClickHandler() {
+//                			@Override
+//                			public void onClick(ClickEvent event) {
+//                				displayPasswordStoreLockKeyQuery();
+//                			}
+//                        };
+//                        
+//                        Button button = new Button("Set Keycode", listener);
+//                        loginPanel.add(button);
+//                	}
+//                }
+
+                {
+	                // Process notesList RPC call results
+	                JSONObject notesListJson = (JSONObject) data[1];
+	                if (notesListJson != null) {
+	                    JSONArray notesJson = notesListJson.get(JumpNoteProtocol.NotesList.RET_NOTES).isArray();
+	                    for (int i = 0; i < notesJson.size(); i++) {
+	                        ModelJso.Note note = (ModelJso.Note) notesJson.get(i).isObject()
+	                                .getJavaScriptObject();
+	                        sNotes.put(note.getId(), new EncodedNote(note));
+	                    }
+	                }
+                }
+
+                callback.run();
+            }
+
+            public void onError(int callIndex, JsonRpcException caught) {
+                // Don't show an error if the notes.list call failed with 403 forbidden, since
+                // that's normal in the case of a user not yet logging in.
+                if (callIndex == 1 && caught.getHttpCode() == 403)
+                    return;
+
+                showMessage("Error: " + caught.getMessage(), false);
+            }
+        });
+    }
+    
     public void loadData(final Runnable callback) {
     	
         List<Call> calls = new ArrayList<Call>();

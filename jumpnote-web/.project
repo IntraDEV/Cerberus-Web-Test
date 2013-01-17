@@ -37,11 +37,4 @@
 		<nature>com.google.gwt.eclipse.core.gwtNature</nature>
 		<nature>com.google.gdt.eclipse.core.webAppNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src.shared</name>
-			<type>2</type>
-			<location>d:/Users/Vincent/eclipse-workspaces/gae-workspace/src.shared</location>
-		</link>
-	</linkedResources>
 </projectDescription>
