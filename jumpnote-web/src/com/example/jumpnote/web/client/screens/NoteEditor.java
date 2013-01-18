@@ -78,10 +78,6 @@ public class NoteEditor extends Screen {
         heading.setInnerText("Editing note: " + editNoteId);
         noteTitle.setText(JumpNoteWeb.sNotes.get(mEditNoteId).getTitle());
         noteBody.setText(JumpNoteWeb.sNotes.get(mEditNoteId).getBody());
-        if (JumpNoteWeb.isKeyPassValid() == false) {
-        	noteTitle.setReadOnly(true);
-        	noteBody.setReadOnly(true);
-        }
     }
 
     @Override

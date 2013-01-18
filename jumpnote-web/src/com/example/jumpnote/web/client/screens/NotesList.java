@@ -76,7 +76,7 @@ public class NotesList extends Screen {
     @UiHandler("setKeyCodeButton")
     void onSetKeyCodeButton(ClickEvent e) {
         //History.newItem("note");
-    	JumpNoteWeb.showMessage("Did it!", true);
+    	JumpNoteWeb.showMessage("This will allow the user to change the keypass in the future", true);
     }
 
     public void refreshNotes() {

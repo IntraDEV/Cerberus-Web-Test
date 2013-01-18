@@ -45,6 +45,11 @@ public final class JumpNoteProtocol {
         public static final String ARG_ID = "id";
         public static final String RET_NOTE = "note";
     }
+    
+    public static final class NotesCount {
+        public static final String METHOD = "notes.count";
+        public static final String RET_COUNT = "count";
+    }
 
     public static final class NotesCreate {
         public static final String METHOD = "notes.create";

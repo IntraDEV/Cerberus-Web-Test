@@ -27,6 +27,8 @@ import com.example.jumpnote.allshared.JsonRpcException;
 import com.example.jumpnote.allshared.JumpNoteProtocol;
 import com.example.jumpnote.web.client.code.EncodedNote;
 import com.example.jumpnote.web.client.code.NoteDecoderFactory;
+import com.example.jumpnote.web.client.screens.KeyPassRequestPopupScreen;
+import com.example.jumpnote.web.client.screens.KeypassRequestScreen;
 import com.example.jumpnote.web.client.screens.NoteEditor;
 import com.example.jumpnote.web.client.screens.NotesList;
 import com.example.jumpnote.web.client.screens.WelcomeScreen;
@@ -34,6 +36,9 @@ import com.example.jumpnote.web.jsonrpc.gwt.JsonRpcGwtClient;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
@@ -48,13 +53,15 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
  * The JumpNote web client entry point.
  */
 public class JumpNoteWeb implements EntryPoint {
-    private static final int TRANSIENT_MESSAGE_HIDE_DELAY = 5000;
+	public static final int TRANSIENT_MESSAGE_HIDE_DELAY = 5000;
+	public static final int MIN_PASSCODE_LENGTH = 4;
     
     private final ScreenContainer mScreenContainer = new ScreenContainer();
     public static RootPanel sMessagePanel = null;
@@ -64,306 +71,174 @@ public class JumpNoteWeb implements EntryPoint {
     public static Map<String, EncodedNote> sNotes = new HashMap<String, EncodedNote>();
     public static ModelJso.UserInfo sUserInfo = null;
     
-    private static boolean isValidKeyPass = false;
-    
-    public static boolean isKeyPassValid () {
-    	return isValidKeyPass;
-    }
-    
-    
-    private static class MyPopup extends PopupPanel {
-
-        public MyPopup() {
-          // PopupPanel's constructor takes 'auto-hide' as its boolean parameter.
-          // If this is set, the panel closes itself automatically when the user
-          // clicks outside of it.
-          super(false);
-
-          // PopupPanel is a SimplePanel, so you have to set it's widget property to
-          // whatever you want its contents to be.
-          //setWidget(new Label("Click outside of this popup to close it"));
-          
-          setGlassEnabled(true);
-        }
-      }
-    
-    //My attempts to get a passcode from the user
-    public void displayPasswordStoreLockKeyQuery()
-    {
-    	
-    	 final MyPopup popup;
-    	 final VerticalPanel popUpPanelContents;
-    	 final HTML message;
-    	 final ClickHandler listener;
-    	 final Button button;
-    	 final SimplePanel holder;
-    	 final PasswordTextBox ptb;
-
-        // Create a PopUpPanel with a button to close it
-        popup = new MyPopup();
-        popup.setStyleName("demo-PopUpPanel");
-        popup.setGlassStyleName("demo-PopupPanel-glass");
-        popUpPanelContents = new VerticalPanel();
-        //popup.setText("PopUpPanel");
-        popup.setTitle("PopUpPanel");
-        
-        message = new HTML("Enter password store keycode");
-        message.setStyleName("demo-PopUpPanel-message");
-
-        ptb = new PasswordTextBox();
-        ptb.setStyleName("demo-PopUpPanel-password");
-        
-        listener = new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				
-				String passcode = ptb.getValue();
-				
-				//Check that passcode is not zero
-				//if the passcode is not zero
-					//If there are notes
-						//Perform a sample check that any existing notes can be decoded
-						//If the passcode is valid
-						//install the non-default note decode
-						//Hide the glass
-					//If there are no notes
-						//install the non-default note decode
-						//Hide the glass
-				//Else in all cases
-					//Stay in glass mode
-					//Display an error message
-				
-				
-				NoteDecoderFactory.installNoteDecoder(passcode);
-				
-				
-				NotesList nw=(NotesList)mScreenContainer.getScreenByName("home");
-				nw.refreshNotes();
-				
-				popup.hide();
-			}
-        };
-        
-        button = new Button("Open", listener);
-        holder = new SimplePanel();
-        holder.add(button);
-        holder.setStyleName("demo-PopUpPanel-footer");
-        
-        
-        
-        
-        
-        popUpPanelContents.add(message);
-        popUpPanelContents.add(ptb);
-        popUpPanelContents.add(holder);
-       
-        popup.setWidget(popUpPanelContents);
-
-        
-        popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-          public void setPosition(int offsetWidth, int offsetHeight) {
-            int left = (Window.getClientWidth() - offsetWidth) / 2;
-            int top = (Window.getClientHeight() - offsetHeight) / 2;
-            popup.setPopupPosition(left, top);                           
-          }
-        });
-        
-    }
-    
-
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
         showMessage("Loading...", false);
 
-        // Create login/logout links
-        loadData(new Runnable() {
-            public void run() {
-                hideMessage();
-                if (sUserInfo == null) {
-                    RootPanel.get("screenPanel").add(new WelcomeScreen());
-                } else {
-                    mScreenContainer.addScreen("home", new NotesList());
-                    mScreenContainer.addScreen("note", new NoteEditor());
-                    mScreenContainer.setDefault("home");
-                    mScreenContainer.install(RootPanel.get("screenPanel"));
-                    
-                                        
-                    //My attempts to get a passcode from the user
-                    {
-                    	displayPasswordStoreLockKeyQuery();
-                    }
-                }
-            }
-        });
+        runStateMachine();
+
     }
     
     
-    private final int STATE_INITIAL = 0;
-    private final int STATE_REQUESTING_USERINFO = 1;
-    private final int STATE_NEED_LOGIN = 2;
-    private final int STATE_REQUESTING_NEED_LOGIN = 2;
-    
-    
 
-    public void getUserLoginCookie(final Runnable callback) {
+
+    private class PostLoginCallback implements JsonRpcClient.Callback
+    {
+
+		@Override
+		public void onSuccess(Object data) {
+			final RootPanel loginPanel = RootPanel.get("loginPanel");
+			// Process userInfo RPC call results
+            JSONObject userInfoJson = (JSONObject) data;
+            if (userInfoJson.containsKey(JumpNoteProtocol.UserInfo.RET_USER)) {
+                JumpNoteWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
+                        JumpNoteProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
+                InlineLabel label = new InlineLabel();
+                label.getElement().setId("userNameLabel");
+                label.setText(sUserInfo.getNick());
+                loginPanel.add(label);
+
+                loginPanel.add(new InlineLabel(" | "));
+
+                Anchor anchor = new Anchor("Sign out",
+                        userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGOUT_URL).isString()
+                        .stringValue());
+                loginPanel.add(anchor);
+            } else {
+                sLoginUrl = userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
+                Anchor anchor = new Anchor("Sign in", sLoginUrl);
+                loginPanel.add(anchor);
+            }
+            
+            runStateMachine();
+			
+		}
+
+		@Override
+		public void onError(JsonRpcException caught) {
+			showMessage("Error: " + caught.getMessage(), false);
+		}
+    }
+    
+    private class PostDataLoadedCallback implements JsonRpcClient.Callback
+    {
+
+		@Override
+		public void onSuccess(Object data) {
+            // Process notesList RPC call results
+            JSONObject notesListJson = (JSONObject) data;
+            if (notesListJson != null) {
+                JSONArray notesJson = notesListJson.get(JumpNoteProtocol.NotesList.RET_NOTES).isArray();
+                for (int i = 0; i < notesJson.size(); i++) {
+                    ModelJso.Note note = (ModelJso.Note) notesJson.get(i).isObject()
+                            .getJavaScriptObject();
+                    sNotes.put(note.getId(), new EncodedNote(note));
+                }
+            }
+                      
+            runStateMachine();
+		}
+		
+		@Override
+		public void onError(JsonRpcException caught) {
+			showMessage("Error: " + caught.getMessage(), false);
+		}
+    }
+    
+    
+    private class PostKeyPassRequestCallback implements KeyPassRequestPopupScreen.PopupCompleteCallback
+    {
+		@Override
+		public void popupComplete() {
+			runStateMachine();					
+		}
+    }
+    
+    public final int STATE_INITIAL = 0;
+    public final int STATE_REQUESTING_USERINFO = 1;
+//        STATE_NEED_LOGIN = 2;
+    public final int STATE_REQUESTING_LOGIN = 3;
+    public final int STATE_FETCHING_NOTES = 4;
+    public final int STATE_REQUESTING_KEYCODE = 5;
+    public final int STATE_APPLICATION_RUNNING = 6;
+    
+    private int currentApplicationState = STATE_INITIAL;
+    
+    private void performPostFetchProcessing() {
+    	hideMessage();
+    	switch (currentApplicationState) {
+    	case STATE_REQUESTING_USERINFO:
+    		RootPanel.get("screenPanel").add(new WelcomeScreen());
+    		break;
+    	case STATE_FETCHING_NOTES:
+    		RootPanel.get("screenPanel").add(new KeypassRequestScreen());
+    		new KeyPassRequestPopupScreen(new PostKeyPassRequestCallback());
+    		break;
+    	case STATE_REQUESTING_KEYCODE:
+    		mScreenContainer.addScreen("home", new NotesList());
+    		mScreenContainer.addScreen("note", new NoteEditor());
+    		mScreenContainer.setDefault("home");
+    		mScreenContainer.install(RootPanel.get("screenPanel"));
+    		break;
+    	}
+
+    }
+    
+    private void runStateMachine() {
     	
-        List<Call> calls = new ArrayList<Call>();
+    	switch (currentApplicationState) {
+    	case STATE_INITIAL:
+    		currentApplicationState = STATE_REQUESTING_USERINFO;
+    		getUserLoginCookie(new PostLoginCallback());
+    		break;
+    	case STATE_REQUESTING_USERINFO:
+    		//Did we get the login info? E.g. are we already logged in?
+    		if (JumpNoteWeb.sUserInfo == null) {
+    			//We aren't logged in
+    			//assert(sLoginUrl != null);    			
+    			performPostFetchProcessing();
+    			currentApplicationState = STATE_REQUESTING_LOGIN;
+    		} else {
+    			//assert(sLoginUrl == null);
+    			currentApplicationState = STATE_FETCHING_NOTES;
+    			loadData(new PostDataLoadedCallback());
+    		}
+    		break;
+//    	case STATE_NEED_LOGIN:
+//    		break;
+    	case STATE_REQUESTING_LOGIN:
+    		//Do nothing, we don't allow the user to go any further
+    		break;
+    	case STATE_FETCHING_NOTES:    		
+    		performPostFetchProcessing();
+    		currentApplicationState = STATE_REQUESTING_KEYCODE;
+    		break;
+    	case STATE_REQUESTING_KEYCODE:
+    		//TODO: need some logic to know if the keycode was successful, and also to inform the user to create a keypass if there are no notes
+    		performPostFetchProcessing();
+    		currentApplicationState = STATE_APPLICATION_RUNNING;
+    		break;
+    	case STATE_APPLICATION_RUNNING:
+    		break;
+    	}
+    }
+    
 
+    public void getUserLoginCookie(final JsonRpcClient.Callback callback) {
         // Get and populate login information
         JSONObject userInfoParams = new JSONObject();
         userInfoParams.put(JumpNoteProtocol.UserInfo.ARG_LOGIN_CONTINUE,
                 new JSONString(Window.Location.getHref()));
 
-        final RootPanel loginPanel = RootPanel.get("loginPanel");
-        calls.add(new Call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams));
-        calls.add(new Call(JumpNoteProtocol.NotesList.METHOD, null));
-
-        sJsonRpcClient.call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams, callback)
+        sJsonRpcClient.call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams, callback);
         
-        sJsonRpcClient.callBatch(calls, new JsonRpcClient.BatchCallback() {
-            public void onData(Object[] data) {
-                // Process userInfo RPC call results
-                JSONObject userInfoJson = (JSONObject) data[0];
-                if (userInfoJson.containsKey(JumpNoteProtocol.UserInfo.RET_USER)) {
-                    JumpNoteWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
-                            JumpNoteProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
-                    InlineLabel label = new InlineLabel();
-                    label.getElement().setId("userNameLabel");
-                    label.setText(sUserInfo.getNick());
-                    loginPanel.add(label);
 
-                    loginPanel.add(new InlineLabel(" | "));
-
-                    Anchor anchor = new Anchor("Sign out",
-                            userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGOUT_URL).isString()
-                            .stringValue());
-                    loginPanel.add(anchor);
-                } else {
-                    sLoginUrl = userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
-                    Anchor anchor = new Anchor("Sign in", sLoginUrl);
-                    loginPanel.add(anchor);
-                }
-                
-//                {
-//                	if (isValidKeyPass == false) {
-//                		ClickHandler listener = new ClickHandler() {
-//                			@Override
-//                			public void onClick(ClickEvent event) {
-//                				displayPasswordStoreLockKeyQuery();
-//                			}
-//                        };
-//                        
-//                        Button button = new Button("Set Keycode", listener);
-//                        loginPanel.add(button);
-//                	}
-//                }
-
-                {
-	                // Process notesList RPC call results
-	                JSONObject notesListJson = (JSONObject) data[1];
-	                if (notesListJson != null) {
-	                    JSONArray notesJson = notesListJson.get(JumpNoteProtocol.NotesList.RET_NOTES).isArray();
-	                    for (int i = 0; i < notesJson.size(); i++) {
-	                        ModelJso.Note note = (ModelJso.Note) notesJson.get(i).isObject()
-	                                .getJavaScriptObject();
-	                        sNotes.put(note.getId(), new EncodedNote(note));
-	                    }
-	                }
-                }
-
-                callback.run();
-            }
-
-            public void onError(int callIndex, JsonRpcException caught) {
-                // Don't show an error if the notes.list call failed with 403 forbidden, since
-                // that's normal in the case of a user not yet logging in.
-                if (callIndex == 1 && caught.getHttpCode() == 403)
-                    return;
-
-                showMessage("Error: " + caught.getMessage(), false);
-            }
-        });
     }
     
-    public void loadData(final Runnable callback) {
-    	
-        List<Call> calls = new ArrayList<Call>();
-
-        // Get and populate login information
-        JSONObject userInfoParams = new JSONObject();
-        userInfoParams.put(JumpNoteProtocol.UserInfo.ARG_LOGIN_CONTINUE,
-                new JSONString(Window.Location.getHref()));
-
-        final RootPanel loginPanel = RootPanel.get("loginPanel");
-        calls.add(new Call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams));
-        calls.add(new Call(JumpNoteProtocol.NotesList.METHOD, null));
-
-        sJsonRpcClient.callBatch(calls, new JsonRpcClient.BatchCallback() {
-            public void onData(Object[] data) {
-                // Process userInfo RPC call results
-                JSONObject userInfoJson = (JSONObject) data[0];
-                if (userInfoJson.containsKey(JumpNoteProtocol.UserInfo.RET_USER)) {
-                    JumpNoteWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
-                            JumpNoteProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
-                    InlineLabel label = new InlineLabel();
-                    label.getElement().setId("userNameLabel");
-                    label.setText(sUserInfo.getNick());
-                    loginPanel.add(label);
-
-                    loginPanel.add(new InlineLabel(" | "));
-
-                    Anchor anchor = new Anchor("Sign out",
-                            userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGOUT_URL).isString()
-                            .stringValue());
-                    loginPanel.add(anchor);
-                } else {
-                    sLoginUrl = userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
-                    Anchor anchor = new Anchor("Sign in", sLoginUrl);
-                    loginPanel.add(anchor);
-                }
-                
-                {
-                	if (isValidKeyPass == false) {
-                		ClickHandler listener = new ClickHandler() {
-                			@Override
-                			public void onClick(ClickEvent event) {
-                				displayPasswordStoreLockKeyQuery();
-                			}
-                        };
-                        
-                        Button button = new Button("Set Keycode", listener);
-                        loginPanel.add(button);
-                	}
-                }
-
-                {
-
-	                // Process notesList RPC call results
-	                JSONObject notesListJson = (JSONObject) data[1];
-	                if (notesListJson != null) {
-	                    JSONArray notesJson = notesListJson.get(JumpNoteProtocol.NotesList.RET_NOTES).isArray();
-	                    for (int i = 0; i < notesJson.size(); i++) {
-	                        ModelJso.Note note = (ModelJso.Note) notesJson.get(i).isObject()
-	                                .getJavaScriptObject();
-	                        sNotes.put(note.getId(), new EncodedNote(note));
-	                    }
-	                }
-                }
-
-                callback.run();
-            }
-
-            public void onError(int callIndex, JsonRpcException caught) {
-                // Don't show an error if the notes.list call failed with 403 forbidden, since
-                // that's normal in the case of a user not yet logging in.
-                if (callIndex == 1 && caught.getHttpCode() == 403)
-                    return;
-
-                showMessage("Error: " + caught.getMessage(), false);
-            }
-        });
+    public void loadData(final JsonRpcClient.Callback callback) {
+        sJsonRpcClient.call(JumpNoteProtocol.NotesList.METHOD, null, callback);
     }
 
     public static void showMessage(String message, boolean isTransient) {

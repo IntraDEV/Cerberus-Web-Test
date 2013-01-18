@@ -102,5 +102,10 @@ public class EncodedNote {
     public JSONObject getJSONObject() {
     	return new JSONObject(impl);
     }
+    
+    public boolean isDecodable() {
+    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+    	return nd.isDecoderValid(impl.getBody());
+    }
 
 }

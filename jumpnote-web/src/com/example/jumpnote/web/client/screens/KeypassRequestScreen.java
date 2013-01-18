@@ -30,19 +30,15 @@ import java.util.List;
  * The welcome screen, containing a simple message indicating that the user needs to sign in
  * to see her notes.
  */
-public class WelcomeScreen extends Screen {
+public class KeypassRequestScreen extends Screen {
 
-    private static WelcomScreenrUiBinder uiBinder = GWT.create(WelcomScreenrUiBinder.class);
+    private static KeypassRequestScreenUiBinder uiBinder = GWT.create(KeypassRequestScreenUiBinder.class);
 
-    @UiField
-    Anchor signInLink;
-
-    interface WelcomScreenrUiBinder extends UiBinder<Widget, WelcomeScreen> {
+    interface KeypassRequestScreenUiBinder extends UiBinder<Widget, KeypassRequestScreen> {
     }
 
-    public WelcomeScreen() {
+    public KeypassRequestScreen() {
         initWidget(uiBinder.createAndBindUi(this));
-        signInLink.setHref(JumpNoteWeb.sLoginUrl);
     }
 
     @Override

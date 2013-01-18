@@ -140,6 +140,27 @@ public class JumpNoteServlet extends JsonRpcServlet {
             throw new JsonRpcException(404, "Note with ID " + noteId + " does not exist.");
         }
     }
+    
+    @JsonRpcMethod(method = JumpNoteProtocol.NotesCount.METHOD, requires_login = true)
+    public JSONObject notesCount(final CallContext context) throws JSONException, JsonRpcException {
+        UserInfo userInfo = getCurrentUserInfo(context);
+
+        // Note: this would be inefficient for large note collections
+        Query query = context.getPersistenceManager().newQuery(Note.class);
+        query.setFilter("ownerKey == ownerKeyParam && pendingDelete == false");
+        query.declareParameters(Key.class.getName() + " ownerKeyParam");
+        @SuppressWarnings("unchecked")
+        List<Note> notes = (List<Note>) query.execute(userInfo.getKey());
+
+        JSONObject responseJson = new JSONObject();
+        try {
+            responseJson.put(JumpNoteProtocol.NotesCount.RET_COUNT, Integer.toString(notes.size()));
+        } catch (JSONException e) {
+            throw new JsonRpcException(500, "Error serializing response.", e);
+        }
+
+        return responseJson;
+    }
 
     @JsonRpcMethod(method = JumpNoteProtocol.NotesCreate.METHOD, requires_login = true)
     public JSONObject notesCreate(final CallContext context) throws JSONException, JsonRpcException {

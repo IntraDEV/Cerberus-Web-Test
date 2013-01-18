@@ -245,8 +245,22 @@ public class NoteDecoderImpl implements NoteDecoder {
 		}
 	}
 	
-	public boolean isDecoderValid() {
-		return true;
+	public boolean isDecoderValid(String encrypted) {
+		boolean encodeSuccess=false;
+		try {
+			cipher.decrypt(encrypted);
+			encodeSuccess = true;
+		} catch (DataLengthException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidCipherTextException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		return encodeSuccess;
 	}
 	
 	public String decodeTitle (String title)

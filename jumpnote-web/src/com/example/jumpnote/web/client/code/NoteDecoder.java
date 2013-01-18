@@ -7,6 +7,6 @@ public interface NoteDecoder {
 	public String encodeTitle (String title);
 	public String encodeBody (String body);
 	
-	public boolean isDecoderValid();
+	public boolean isDecoderValid(String encrypted);
 
 }
