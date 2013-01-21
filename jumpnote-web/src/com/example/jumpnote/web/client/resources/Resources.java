@@ -9,6 +9,20 @@ import com.google.gwt.resources.client.ImageResource;
  * Resources used by the web client.
  */
 public interface Resources extends ClientBundle {
+	
+	
+    @Source("btn_change_keycode_off.png")
+    ImageResource btn_edit_keycode_password_off();
+
+    @Source("btn_change_keycode_on.png")
+    ImageResource btn_edit_keycode_password_on();
+	
+    @Source("btn_change_keycode_off.png")
+    ImageResource btn_create_keycode_password_off();
+
+    @Source("btn_change_keycode_on.png")
+    ImageResource btn_create_keycode_password_on();
+	
     @Source("btn_create_password_off.png")
     ImageResource btn_create();
 

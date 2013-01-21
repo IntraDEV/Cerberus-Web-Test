@@ -27,9 +27,9 @@
             <g:downFace image="{res.btn_create_on}"/>
         </g:PushButton>
         <g:PushButton ui:field="setKeyCodeButton">
-            <g:upFace image="{res.btn_create}"/>
-            <g:upHoveringFace image="{res.btn_create_on}"/>
-            <g:downFace image="{res.btn_create_on}"/>
+		    <g:upFace image="{res.btn_edit_keycode_password_off}"/>
+		    <g:upHoveringFace image="{res.btn_edit_keycode_password_on}"/>
+		    <g:downFace image="{res.btn_edit_keycode_password_on}"/>
         </g:PushButton>
     </g:HTMLPanel>
 </ui:UiBinder>

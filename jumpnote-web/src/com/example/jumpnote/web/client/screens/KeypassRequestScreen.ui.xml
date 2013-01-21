@@ -32,9 +32,9 @@
                 <div class="footer">  
 	                
                     	<g:PushButton ui:field="button" styleName="okButton">
-						    <g:upFace image="{res.btn_create}"/>
-						    <g:upHoveringFace image="{res.btn_create_on}"/>
-						    <g:downFace image="{res.btn_create_on}"/>
+						    <g:upFace image="{res.btn_create_keycode_password_off}"/>
+						    <g:upHoveringFace image="{res.btn_create_keycode_password_on}"/>
+						    <g:downFace image="{res.btn_create_keycode_password_on}"/>
 						</g:PushButton>
                 	              
                 </div>
