@@ -19,7 +19,7 @@
     xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <g:HTMLPanel>
         <p class="big-text">
-            Welcome to JumpNote!<br/>
+            Welcome to Cerberus!<br/>
             <g:Anchor ui:field="signInLink">Sign in</g:Anchor> with your Google Account to continue.
         </p>
     </g:HTMLPanel>

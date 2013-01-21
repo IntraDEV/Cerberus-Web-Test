@@ -66,9 +66,13 @@ public class NoteEditor extends Screen {
 
     @UiField
     PushButton revertButton;
+    
+    
+    private JumpNoteWeb masterInstance;
 
-    public NoteEditor() {
+    public NoteEditor(JumpNoteWeb instance) {
         initWidget(uiBinder.createAndBindUi(this));
+        masterInstance = instance;
         heading.setInnerText("New Note");
     }
 
@@ -88,7 +92,7 @@ public class NoteEditor extends Screen {
                 this.noteBody.setText("");
                 return this;
             } else
-                return new NoteEditor();
+                return new NoteEditor(masterInstance);
         } else if (args.size() == 1) {
             if (args.get(0).equals(mEditNoteId))
                 return this;

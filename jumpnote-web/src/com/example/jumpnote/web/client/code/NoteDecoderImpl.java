@@ -251,7 +251,7 @@ public class NoteDecoderImpl implements NoteDecoder {
 			cipher.decrypt(encrypted);
 			encodeSuccess = true;
 		} catch (DataLengthException e) {
-			// TODO Auto-generated catch block
+			// TODO Auto-generated catch block			
 			e.printStackTrace();
 		} catch (IllegalStateException e) {
 			// TODO Auto-generated catch block

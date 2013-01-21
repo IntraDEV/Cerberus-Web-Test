@@ -18,10 +18,30 @@ package com.example.jumpnote.web.client.screens;
 
 import com.example.jumpnote.web.client.JumpNoteWeb;
 import com.example.jumpnote.web.client.Screen;
+import com.example.jumpnote.web.client.code.EncodedNote;
+import com.example.jumpnote.web.client.code.NoteDecoderFactory;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.WindowResizeListener;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -36,13 +56,142 @@ public class KeypassRequestScreen extends Screen {
 
     interface KeypassRequestScreenUiBinder extends UiBinder<Widget, KeypassRequestScreen> {
     }
+    
+    
+    @UiField
+    PopupPanel popup;
+        
+    @UiField
+   	Label label;
+    
+    @UiField
+   	Label body;
+    
+    @UiField
+    PushButton button;
+    
+    @UiField
+	PasswordTextBox ptb;
 
-    public KeypassRequestScreen() {
+    
+    private final PopupCompleteCallback callback;
+    private ClickHandler listener;
+    private HandlerRegistration handlerRegistration;
+
+    public KeypassRequestScreen(final PopupCompleteCallback callback) {
         initWidget(uiBinder.createAndBindUi(this));
+        
+    	this.callback = callback;
+
+        
+        if (JumpNoteWeb.sNotes.size() == 0) {
+        	popup.setTitle("Enter the keycode you will use to unlock your password store");
+        } else {
+        	popup.setTitle("Enter the keycode to unlock your password store");     	
+        }
+       
+
+        SubmitListener sl = new SubmitListener();
+
+        ptb.addKeyDownHandler((KeyDownHandler) sl);
+
+        listener = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {				
+				handleClick();
+			}
+        };
+                
+        button.addClickHandler(listener);
+
+        popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+          public void setPosition(int offsetWidth, int offsetHeight) {
+//            int left = (Window.getClientWidth() - offsetWidth) / 2;
+//            int top = (Window.getClientHeight() - offsetHeight) / 2;
+//            popup.setPopupPosition(left, top);   
+        	//popup.setHeight(getSize()[1] + "px");
+        	//popup.setWidth(getSize()[0] + "px");
+           	popup.center();
+          }
+        });
+
+        handlerRegistration = Window.addResizeHandler(new ResizeHandler() {           
+            @Override
+            public void onResize(ResizeEvent event) {
+               	//popup.setHeight(getNewHeight());
+               	//popup.setWidth(getNewWidth());
+            	//popup.setHeight(getSize()[1] + "px");
+            	//popup.setWidth(getSize()[0] + "px");
+               	popup.center();
+            }
+        });
+        
+    }
+    
+    private int[] getSize() {
+        int[] mas = new int[2];
+        int x = Window.getClientWidth();
+
+        int y = Window.getClientHeight();
+
+        if (x >= 1024) {
+            mas[0] = x - 100;
+            mas[1] = y - 100;
+        } else {
+            mas[0] = 1024;
+            mas[1] = 768;
+        }
+
+        return mas;
     }
 
     @Override
     public Screen fillOrReplace(List<String> args) {
         return this;
     }
+
+    private class SubmitListener implements KeyDownHandler {
+
+		@Override
+		public void onKeyDown(KeyDownEvent event) {
+			if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+				handleClick();
+			}	
+		}
+      }
+    
+    public interface PopupCompleteCallback {
+    	
+    	void popupComplete();
+    }
+    
+    private void shutdownPopup() {
+		callback.popupComplete();
+		handlerRegistration.removeHandler();
+		popup.hide();
+    }
+    
+    private void handleClick() {
+    	String passcode = ptb.getValue();
+		if (passcode.length() < JumpNoteWeb.MIN_PASSCODE_LENGTH) {
+			JumpNoteWeb.showMessage("Cannot have an empty or short passcode",true);
+		} else {
+			if (JumpNoteWeb.sNotes.size() == 0) {
+				NoteDecoderFactory.installNoteDecoder(passcode);
+				shutdownPopup();
+			} else {
+				NoteDecoderFactory.installNoteDecoder(passcode);
+				EncodedNote first=JumpNoteWeb.sNotes.entrySet().iterator().next().getValue();
+				if (first.isDecodable()) {
+					shutdownPopup();
+				} else {
+					//Stay in this state
+					JumpNoteWeb.showMessage("The passcode does not allow you to decode your notes",true);
+					ptb.setText("");						
+				}
+			}	
+		}
+    }
+    
+
 }

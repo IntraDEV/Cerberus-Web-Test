@@ -62,9 +62,12 @@ public class NotesList extends Screen {
     
     @UiField
     PushButton setKeyCodeButton;
+    
+    private JumpNoteWeb masterInstance;
 
-    public NotesList() {
+    public NotesList(JumpNoteWeb instance) {
         initWidget(uiBinder.createAndBindUi(this));
+        masterInstance = instance;
         refreshNotes();
     }
 
@@ -77,6 +80,7 @@ public class NotesList extends Screen {
     void onSetKeyCodeButton(ClickEvent e) {
         //History.newItem("note");
     	JumpNoteWeb.showMessage("This will allow the user to change the keypass in the future", true);
+    	masterInstance.displayRequestKeypassScreen();
     }
 
     public void refreshNotes() {

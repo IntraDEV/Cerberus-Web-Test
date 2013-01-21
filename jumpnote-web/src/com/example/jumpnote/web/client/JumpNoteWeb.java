@@ -27,7 +27,6 @@ import com.example.jumpnote.allshared.JsonRpcException;
 import com.example.jumpnote.allshared.JumpNoteProtocol;
 import com.example.jumpnote.web.client.code.EncodedNote;
 import com.example.jumpnote.web.client.code.NoteDecoderFactory;
-import com.example.jumpnote.web.client.screens.KeyPassRequestPopupScreen;
 import com.example.jumpnote.web.client.screens.KeypassRequestScreen;
 import com.example.jumpnote.web.client.screens.NoteEditor;
 import com.example.jumpnote.web.client.screens.NotesList;
@@ -70,20 +69,30 @@ public class JumpNoteWeb implements EntryPoint {
     public static final JsonRpcGwtClient sJsonRpcClient = new JsonRpcGwtClient("/jumpnoterpc");
     public static Map<String, EncodedNote> sNotes = new HashMap<String, EncodedNote>();
     public static ModelJso.UserInfo sUserInfo = null;
+
+    /*
+     * These are the states for the UI state machine 
+     */
+    public final int STATE_INITIAL = 0;
+    public final int STATE_REQUESTING_USERINFO = 1;
+//        STATE_NEED_LOGIN = 2;
+    public final int STATE_REQUESTING_LOGIN = 3;
+    public final int STATE_FETCHING_NOTES = 4;
+    public final int STATE_REQUESTING_KEYCODE = 5;
+    public final int STATE_APPLICATION_RUNNING = 6;
+    
+    private int currentApplicationState = STATE_INITIAL;
+    
     
     /**
      * This is the entry point method.
      */
     public void onModuleLoad() {
         showMessage("Loading...", false);
-
         runStateMachine();
-
     }
     
-    
-
-
+   
     private class PostLoginCallback implements JsonRpcClient.Callback
     {
 
@@ -148,7 +157,7 @@ public class JumpNoteWeb implements EntryPoint {
     }
     
     
-    private class PostKeyPassRequestCallback implements KeyPassRequestPopupScreen.PopupCompleteCallback
+    private class PostKeyPassRequestCallback implements KeypassRequestScreen.PopupCompleteCallback
     {
 		@Override
 		public void popupComplete() {
@@ -156,16 +165,12 @@ public class JumpNoteWeb implements EntryPoint {
 		}
     }
     
-    public final int STATE_INITIAL = 0;
-    public final int STATE_REQUESTING_USERINFO = 1;
-//        STATE_NEED_LOGIN = 2;
-    public final int STATE_REQUESTING_LOGIN = 3;
-    public final int STATE_FETCHING_NOTES = 4;
-    public final int STATE_REQUESTING_KEYCODE = 5;
-    public final int STATE_APPLICATION_RUNNING = 6;
+    //TODO make me private
+    public void displayRequestKeypassScreen() {
+    	RootPanel.get("screenPanel").add(new KeypassRequestScreen(new PostKeyPassRequestCallback()));	
+    }
     
-    private int currentApplicationState = STATE_INITIAL;
-    
+
     private void performPostFetchProcessing() {
     	hideMessage();
     	switch (currentApplicationState) {
@@ -173,12 +178,11 @@ public class JumpNoteWeb implements EntryPoint {
     		RootPanel.get("screenPanel").add(new WelcomeScreen());
     		break;
     	case STATE_FETCHING_NOTES:
-    		RootPanel.get("screenPanel").add(new KeypassRequestScreen());
-    		new KeyPassRequestPopupScreen(new PostKeyPassRequestCallback());
+    		displayRequestKeypassScreen();
     		break;
     	case STATE_REQUESTING_KEYCODE:
-    		mScreenContainer.addScreen("home", new NotesList());
-    		mScreenContainer.addScreen("note", new NoteEditor());
+    		mScreenContainer.addScreen("home", new NotesList(this));
+    		mScreenContainer.addScreen("note", new NoteEditor(this));
     		mScreenContainer.setDefault("home");
     		mScreenContainer.install(RootPanel.get("screenPanel"));
     		break;
@@ -233,8 +237,6 @@ public class JumpNoteWeb implements EntryPoint {
                 new JSONString(Window.Location.getHref()));
 
         sJsonRpcClient.call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams, callback);
-        
-
     }
     
     public void loadData(final JsonRpcClient.Callback callback) {
