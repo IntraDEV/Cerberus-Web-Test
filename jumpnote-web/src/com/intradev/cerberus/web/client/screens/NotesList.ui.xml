@@ -19,7 +19,7 @@
     xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <ui:with type="com.intradev.cerberus.web.client.resources.Resources" field="res" />
     <g:HTMLPanel>
-        <h2>My Notes</h2>
+        <h2>My Passwords</h2>
         <g:FlowPanel styleName="passwordList" ui:field="passwordList"/>
         <g:PushButton ui:field="createButton">
             <g:upFace image="{res.btn_create}"/>

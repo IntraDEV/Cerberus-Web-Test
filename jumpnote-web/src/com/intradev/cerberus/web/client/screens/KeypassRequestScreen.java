@@ -1,20 +1,6 @@
-/*
- * Copyright 2010 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.intradev.cerberus.web.client.screens;
+
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,23 +14,15 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.WindowResizeListener;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.web.client.JumpNoteWeb;
 import com.intradev.cerberus.web.client.Screen;
 import com.intradev.cerberus.web.client.code.EncodedNote;
 import com.intradev.cerberus.web.client.code.NoteDecoderFactory;
-
-import java.util.List;
 
 /**
  * The welcome screen, containing a simple message indicating that the user needs to sign in
@@ -77,14 +55,12 @@ public class KeypassRequestScreen extends Screen {
     private final PopupCompleteCallback callback;
     private ClickHandler listener;
     private HandlerRegistration handlerRegistration;
+    /*private JumpNoteWeb masterInstance;*/
 
-    public KeypassRequestScreen(final PopupCompleteCallback callback) {
+    public KeypassRequestScreen(JumpNoteWeb instance, final PopupCompleteCallback callback) {
         initWidget(uiBinder.createAndBindUi(this));
-        
+        /*this.masterInstance = instance;*/
     	this.callback = callback;
-
-        
-    	
     	
         if (JumpNoteWeb.sNotes.size() == 0) {
         	popup.setTitle("Enter the keycode you will use to unlock your password store");
@@ -145,6 +121,8 @@ public class KeypassRequestScreen extends Screen {
 		callback.popupComplete();
 		handlerRegistration.removeHandler();
 		popup.hide();
+		//Remove ourselves from the parent
+		this.removeFromParent();
     }
     
     private void handleClick() {

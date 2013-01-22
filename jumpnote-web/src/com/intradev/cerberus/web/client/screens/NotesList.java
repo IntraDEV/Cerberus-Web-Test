@@ -16,6 +16,11 @@
 
 package com.intradev.cerberus.web.client.screens;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.json.client.JSONObject;
@@ -32,16 +37,9 @@ import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
 import com.intradev.cerberus.allshared.JumpNoteProtocol;
 import com.intradev.cerberus.web.client.JumpNoteWeb;
-import com.intradev.cerberus.web.client.ModelJso;
 import com.intradev.cerberus.web.client.Screen;
-import com.intradev.cerberus.web.client.ModelJso.Note;
 import com.intradev.cerberus.web.client.code.EncodedNote;
 import com.intradev.cerberus.web.client.controls.NoteItem;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * The notes list screen.

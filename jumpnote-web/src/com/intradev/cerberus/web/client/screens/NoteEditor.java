@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/*
+ * Heavily modified from original source from google
+ */
+
 package com.intradev.cerberus.web.client.screens;
 
 import com.google.gwt.core.client.GWT;

@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+/*
+ * Modified from original google code
+ */
+
 package com.intradev.cerberus.web.client.screens;
+
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Widget;
-import com.intradev.cerberus.web.client.JumpNoteWeb;
 import com.intradev.cerberus.web.client.Screen;
-
-import java.util.List;
 
 /**
  * The welcome screen, containing a simple message indicating that the user needs to sign in
@@ -40,9 +43,9 @@ public class WelcomeScreen extends Screen {
     interface WelcomScreenrUiBinder extends UiBinder<Widget, WelcomeScreen> {
     }
 
-    public WelcomeScreen() {
+    public WelcomeScreen(String loginUrl) {
         initWidget(uiBinder.createAndBindUi(this));
-        signInLink.setHref(JumpNoteWeb.sLoginUrl);
+        signInLink.setHref(loginUrl);
     }
 
     @Override

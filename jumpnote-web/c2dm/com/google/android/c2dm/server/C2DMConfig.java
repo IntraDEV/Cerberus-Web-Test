@@ -29,7 +29,6 @@ import com.google.appengine.api.datastore.Key;
 public final class C2DMConfig {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    @SuppressWarnings("unused")
     private Key key;
 
     @Persistent

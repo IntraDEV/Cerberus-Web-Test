@@ -18,9 +18,9 @@
     xmlns:ui="urn:ui:com.google.gwt.uibinder"
     xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <ui:with type="com.intradev.cerberus.web.client.resources.Resources" field="res" />
-    <g:HTMLPanel styleName="noteItem">
-        <g:Label styleName="noteTitle" ui:field="titleLabel"/>
-        <g:Label styleName="noteSnippet" ui:field="snippetLabel"/>
+    <g:HTMLPanel styleName="passwordItem">
+        <g:Label styleName="passwordTitle" ui:field="titleLabel"/>
+        <g:Label styleName="passwordSnippet" ui:field="snippetLabel"/>
         <div class="controls">
             <g:PushButton ui:field="editButton">
                 <g:upFace image="{res.btn_edit}"/>

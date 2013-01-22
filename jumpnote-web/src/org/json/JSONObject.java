@@ -86,6 +86,7 @@ import java.util.TreeSet;
  * @author JSON.org
  * @version 2010-01-05
  */
+@SuppressWarnings({"rawtypes" , "unchecked"})
 public class JSONObject {
 
     /**
@@ -285,7 +286,7 @@ public class JSONObject {
      * @param names An array of strings, the names of the fields to be obtained
      * from the object.
      */
-    public JSONObject(Object object, String names[]) {
+	public JSONObject(Object object, String names[]) {
         this();
         Class c = object.getClass();
         for (int i = 0; i < names.length; i += 1) {

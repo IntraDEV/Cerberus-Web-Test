@@ -1,13 +1,6 @@
 package com.intradev.cerberus.web.client.code;
 
-import java.util.Date;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 import com.google.gwt.json.client.JSONObject;
-import com.intradev.cerberus.allshared.Model;
 import com.intradev.cerberus.web.client.ModelJso;
 
 public class EncodedNote {

@@ -12,6 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ */
+
+/*
+ * This file has been modified from the original google code
  */
 
 package com.intradev.cerberus.web.client;

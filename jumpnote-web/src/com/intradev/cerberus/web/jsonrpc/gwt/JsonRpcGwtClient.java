@@ -84,7 +84,8 @@ public class JsonRpcGwtClient implements JsonRpcClient {
 
                 public void onResponseReceived(Request request, Response response) {
                     if (200 == response.getStatusCode()) {
-                        JSONObject responseJson = JSONParser.parse(response.getText()).isObject();
+                        //JSONObject responseJson = JSONParser.parse(response.getText()).isObject();
+                    	JSONObject responseJson = JSONParser.parseStrict(response.getText()).isObject();
                         JSONArray resultsJson = responseJson.get("results").isArray();
                         Object[] resultData = new Object[calls.size()];
 

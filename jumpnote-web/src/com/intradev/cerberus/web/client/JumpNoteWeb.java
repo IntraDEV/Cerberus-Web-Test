@@ -14,40 +14,28 @@
  * limitations under the License.
  */
 
+/*
+ * This file is heavily modified from the original google code.
+ */
+
 package com.intradev.cerberus.web.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.PasswordTextBox;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
 import com.intradev.cerberus.allshared.JumpNoteProtocol;
-import com.intradev.cerberus.allshared.JsonRpcClient.Call;
 import com.intradev.cerberus.web.client.code.EncodedNote;
-import com.intradev.cerberus.web.client.code.NoteDecoderFactory;
 import com.intradev.cerberus.web.client.screens.KeypassRequestScreen;
 import com.intradev.cerberus.web.client.screens.NoteEditor;
 import com.intradev.cerberus.web.client.screens.NotesList;
@@ -62,10 +50,11 @@ public class JumpNoteWeb implements EntryPoint {
 	public static final int TRANSIENT_MESSAGE_HIDE_DELAY = 5000;
 	public static final int MIN_PASSCODE_LENGTH = 4;
     
+	//TODO: these are probably static to simplify the sample code. Need to remake them non-static and private
     private final ScreenContainer mScreenContainer = new ScreenContainer();
     public static RootPanel sMessagePanel = null;
 
-    public static String sLoginUrl = "";
+    private String sLoginUrl = "";
     public static final JsonRpcGwtClient sJsonRpcClient = new JsonRpcGwtClient("/jumpnoterpc");
     public static Map<String, EncodedNote> sNotes = new HashMap<String, EncodedNote>();
     public static ModelJso.UserInfo sUserInfo = null;
@@ -73,16 +62,16 @@ public class JumpNoteWeb implements EntryPoint {
     /*
      * These are the states for the UI state machine 
      */
-    public final int STATE_INITIAL = 0;
-    public final int STATE_REQUESTING_USERINFO = 1;
+    public final static int STATE_INITIAL = 0;
+    public final static int STATE_REQUESTING_USERINFO = 1;
 //        STATE_NEED_LOGIN = 2;
-    public final int STATE_REQUESTING_LOGIN = 3;
-    public final int STATE_FETCHING_NOTES = 4;
-    public final int STATE_REQUESTING_KEYCODE = 5;
-    public final int STATE_APPLICATION_RUNNING = 6;
+    public final static int STATE_REQUESTING_LOGIN = 3;
+    public final static int STATE_FETCHING_NOTES = 4;
+    public final static int STATE_REQUESTING_KEYCODE = 5;
+    public final static int STATE_APPLICATION_RUNNING = 6;
     
     private int currentApplicationState = STATE_INITIAL;
-    
+      
     
     /**
      * This is the entry point method.
@@ -161,13 +150,14 @@ public class JumpNoteWeb implements EntryPoint {
     {
 		@Override
 		public void popupComplete() {
-			runStateMachine();					
+			runStateMachine();				
 		}
     }
     
     //TODO make me private
     public void displayRequestKeypassScreen() {
-    	RootPanel.get("screenPanel").add(new KeypassRequestScreen(new PostKeyPassRequestCallback()));	
+    	RootPanel.get("screenPanel").add(new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
+    	//History.newItem("settings");
     }
     
 
@@ -175,14 +165,18 @@ public class JumpNoteWeb implements EntryPoint {
     	hideMessage();
     	switch (currentApplicationState) {
     	case STATE_REQUESTING_USERINFO:
-    		RootPanel.get("screenPanel").add(new WelcomeScreen());
+    		RootPanel.get("screenPanel").add(new WelcomeScreen(sLoginUrl));
     		break;
     	case STATE_FETCHING_NOTES:
+//    		mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
+//    		mScreenContainer.setDefault("settings");
+//    		mScreenContainer.install(RootPanel.get("screenPanel"));    		
     		displayRequestKeypassScreen();
     		break;
     	case STATE_REQUESTING_KEYCODE:
     		mScreenContainer.addScreen("home", new NotesList(this));
     		mScreenContainer.addScreen("note", new NoteEditor(this));
+    		//mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
     		mScreenContainer.setDefault("home");
     		mScreenContainer.install(RootPanel.get("screenPanel"));
     		break;
@@ -220,13 +214,14 @@ public class JumpNoteWeb implements EntryPoint {
     		currentApplicationState = STATE_REQUESTING_KEYCODE;
     		break;
     	case STATE_REQUESTING_KEYCODE:
-    		//TODO: need some logic to know if the keycode was successful, and also to inform the user to create a keypass if there are no notes
+    		//TODO: need some logic to inform the user to create a keypass if there are no notes
     		performPostFetchProcessing();
     		currentApplicationState = STATE_APPLICATION_RUNNING;
     		break;
     	case STATE_APPLICATION_RUNNING:
     		break;
     	}
+
     }
     
 

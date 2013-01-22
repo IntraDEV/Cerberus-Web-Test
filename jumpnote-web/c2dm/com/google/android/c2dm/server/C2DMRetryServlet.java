@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 package com.google.android.c2dm.server;
 
 import java.io.IOException;
@@ -61,14 +62,15 @@ public class C2DMRetryServlet extends HttpServlet {
             }
         }
         
-        Map<String, String[]> params = req.getParameterMap();
+        @SuppressWarnings("unchecked")
+		Map<String, String[]> params = req.getParameterMap();
         String collapse = req.getParameter(C2DMessaging.PARAM_COLLAPSE_KEY);
         boolean delayWhenIdle = 
             null != req.getParameter(C2DMessaging.PARAM_DELAY_WHILE_IDLE);
 
         try {
             // Send doesn't retry !! 
-            // We use the queue exponential backoff for retries.
+            // We use the queue exponential back off for retries.
             boolean sentOk = C2DMessaging.get(getServletContext())
               .sendNoRetry(registrationId, collapse, params, delayWhenIdle);
             log.info("Retry result " + sentOk + " " + registrationId);

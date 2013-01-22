@@ -36,13 +36,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.api.taskqueue.Queue;
 import com.google.appengine.api.taskqueue.QueueFactory;
-import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 
 /**
  */
-@SuppressWarnings("serial")
+
 public class C2DMessaging {
     private static final String UPDATE_CLIENT_AUTH = "Update-Client-Auth";
 
@@ -273,7 +272,8 @@ public class C2DMessaging {
             long jitter = (int) Math.random() * C2DM_MAX_JITTER_MSEC;
             url.countdownMillis(jitter);
             
-            TaskHandle add = dmQueue.add(url);
+            /*TaskHandle add =*/ 
+            		dmQueue.add(url);
         } catch (UnsupportedEncodingException e) {
             // Ignore - UTF8 should be supported
             log.log(Level.SEVERE, "Unexpected error", e);

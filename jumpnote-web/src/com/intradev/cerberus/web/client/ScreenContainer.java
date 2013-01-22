@@ -120,4 +120,5 @@ public class ScreenContainer extends SimplePanel {
             JumpNoteWeb.showMessage("Can't find that page.", false);
         }
     }
+    
 }

@@ -1,6 +1,5 @@
 package com.intradev.cerberus.web.client.code;
 
-import com.google.gwt.user.client.Random;
 
 public class NoteDecoderDefault implements NoteDecoder {
 	

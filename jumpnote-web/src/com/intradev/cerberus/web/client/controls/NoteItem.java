@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/*
+ * This code is modified from the original version from google
+ */
+
 package com.intradev.cerberus.web.client.controls;
 
 import com.google.gwt.core.client.GWT;
@@ -27,7 +31,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.intradev.cerberus.allshared.Model;
 import com.intradev.cerberus.web.client.code.EncodedNote;
 
 /**
