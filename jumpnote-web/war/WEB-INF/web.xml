@@ -22,7 +22,7 @@
   <!-- Servlets -->
   <servlet>
     <servlet-name>rpcServlet</servlet-name>
-    <servlet-class>com.example.jumpnote.web.server.JumpNoteServlet</servlet-class>
+    <servlet-class>com.intradev.cerberus.web.server.JumpNoteServlet</servlet-class>
   </servlet>
 
   <servlet>
@@ -42,7 +42,7 @@
 
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>JumpNoteWeb.html</welcome-file>
+    <welcome-file>CerberusWeb.html</welcome-file>
   </welcome-file-list>
 
   <!-- Only allow admins (and the task queue itself) to run tasks. -->

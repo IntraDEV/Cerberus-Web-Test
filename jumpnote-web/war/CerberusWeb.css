@@ -1,0 +1,245 @@
+body
+{
+    margin : 50px;
+    font-size : 13px;
+    font-family : helvetica , arial , sans-serif;
+    color : rgb(51 , 51 , 51);
+}
+#container
+{
+    width : 600px;
+    margin : 0 auto;
+    position : relative;
+}
+#top
+{
+    position : relative;
+}
+#logo
+{
+    display : block;
+    background : transparent url("images/cerberus_logo.png") no-repeat scroll top left;
+    width : 105px;
+    height : 105px;
+}
+#logo span
+{
+    display : none;
+}
+#messagePanelContainer
+{
+    position : fixed;
+    top : 0;
+    left : 0;
+    width : 100%;
+    z-index : -1;
+}
+#messagePanelInnerContainer
+{
+    max-width : 434px;
+    margin : 0 auto;
+    text-align : center;
+}
+#messagePanel
+{
+    display : inline-block;
+    position : relative;
+    top : -20px;
+    padding : 26px 8px 6px 8px;
+    text-align : left;
+    font-weight : bold;
+    background-color : rgb(181 , 90 , 31);
+    color : rgb(255 , 255 , 255);
+    border-radius : 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#c37848), to(#b55a1f));
+  	-webkit-box-shadow: 0px 2px 5px rgba(0,0,0,0.4);
+}
+
+#loginPanel
+{
+    position : absolute;
+    top : 0;
+    right : 0;
+}
+#loginPanel a
+{
+    color : rgb(0 , 0 , 204);
+}
+#userNameLabel
+{
+    font-weight : bold;
+}
+/* content */
+#screenPanel a
+{
+    color : rgb(181 , 90 , 31);
+}
+h2, .big-text
+{
+    margin : 36px 0 12px 0;
+    font-size : 36px;
+    line-height : 42px;
+    letter-spacing : -2px;
+    font-weight : bold;
+}
+
+
+/* passwords list */
+.passwordList
+{
+    margin-bottom : 24px;
+}
+.passwordList .empty
+{
+    color : rgb(136 , 136 , 136);
+}
+.passwordItem
+{
+    position : relative;
+    height : 36px;
+    padding-right : 70px;
+    overflow : hidden;
+    cursor : pointer;
+}
+.passwordItem .passwordTitle
+{
+    display : inline;
+    padding-right : 6px;
+    height : 36px;
+    line-height : 36px;
+    font-size : 18px;
+    font-weight : bold;
+    color : rgb(51 , 51 , 51);
+    text-decoration : none;
+}
+.passwordItem:hover .passwordTitle
+{
+    color : rgb(181 , 90 , 31);
+}
+.passwordItem .passwordSnippet
+{
+    display : inline;
+    line-height : 36px;
+    font-size : 13px;
+    color : rgb(204 , 204 , 204);
+}
+.passwordItem .controls
+{
+    visibility : hidden;
+    position : absolute;
+    right : 0;
+    top : 0;
+}
+.passwordItem:hover .controls
+{
+    visibility : visible;
+}
+
+
+/* password editor */
+.passwordEditor .passwordTitle, .passwordEditor .passwordBody
+{
+    display : block;
+    width : 566px;
+    padding : 8px;
+    border : 1px solid rgb(255 , 255 , 255);
+    border-radius : 4px;
+    outline : 0;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	
+  	-webkit-transition: border 75ms ease-out;
+}
+.passwordEditor .passwordTitle
+{
+    margin : 36px 0 12px 0;
+    background-color : rgb(250 , 230 , 218);
+    font-size : 18px;
+    font-weight : bold;
+    line-height : 18px;
+}
+.passwordEditor .passwordTitle:focus
+{
+    border : 1px solid rgb(181 , 90 , 31);
+}
+.passwordEditor .passwordBody
+{
+    height : 318px;
+    margin : 12px 0;
+    background-color : rgb(253 , 246 , 242);
+    font-size : 18px;
+    line-height : 22px;
+}
+.passwordEditor .passwordBody:focus
+{
+    border : 1px solid rgb(181 , 90 , 31);
+}
+
+
+/* Keypass Editor panel */
+.keypassEditor-PopUpPanel
+{
+    border : 3px solid rgb(0 , 0 , 0);
+    padding : 3px;
+    background : white;
+    /* font-weight : bold; */
+    
+    width: 36em;
+    
+}
+.keypassEditor-PopUpPanel-glass
+{
+    background-color : rgb(0 , 0 , 0);
+    opacity : 0.3;
+}
+
+.keypassEditor-PopUpPanel .image
+{
+	float: right;
+}
+.keypassEditor-PopUpPanel .header
+{
+    padding : 3px;
+    background : white;
+    text-align : center;
+    font-weight: bold;
+}
+.keypassEditor-PopUpPanel .body
+{
+    padding : 10px;
+    background : white;
+    text-align : left;
+}
+.keypassEditor-PopUpPanel .footer
+{
+    padding : 3px;
+    background : white;
+    text-align : center;
+}
+.keypassEditor-PopUpPanel .textEntry
+{
+	border : 3px solid rgb(0 , 0 , 0);
+    font-size : 80%;
+    padding : 1px 15px;
+    /*padding : 60px;*/
+    /* padding-right: 50px; */
+    width :    92%;
+   /*  height   : 100%; */
+    
+    /* margin: auto 50px auto auto; */
+}
+
+.keypassEditor-PopUpPanel .okButton
+{
+    background : white;
+    padding : 3px 0px 3px;
+    text-align: center;
+}
+
+/* GWT defaults */
+.gwt-PushButton
+{
+    display : inline;
+}

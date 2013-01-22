@@ -40,12 +40,6 @@ import com.google.appengine.api.taskqueue.TaskHandle;
 import com.google.appengine.api.taskqueue.TaskOptions;
 
 
-//Removed since this has presumably now been implemented offically
-//import com.google.appengine.api.labs.taskqueue.Queue;
-//import com.google.appengine.api.labs.taskqueue.QueueFactory;
-//import com.google.appengine.api.labs.taskqueue.TaskHandle;
-//import com.google.appengine.api.labs.taskqueue.TaskOptions;
-
 /**
  */
 @SuppressWarnings("serial")
@@ -264,7 +258,6 @@ public class C2DMessaging {
         Queue dmQueue = QueueFactory.getQueue("c2dm");
         try {
             TaskOptions url = 
-                //TaskOptions.Builder.url(C2DMRetryServlet.URI)
                 TaskOptions.Builder.withUrl(C2DMRetryServlet.URI)
                 .param(C2DMessaging.PARAM_REGISTRATION_ID, token)
                 .param(C2DMessaging.PARAM_COLLAPSE_KEY, collapseKey);

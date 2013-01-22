@@ -1,0 +1,46 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder
+    xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with type="com.intradev.cerberus.web.client.resources.Resources" field="res" />
+    <g:HTMLPanel>
+    <p class="big-text">
+        Welcome to Cerberus!
+    </p>
+    
+    
+    <g:PopupPanel styleName="keypassEditor-PopUpPanel" glassEnabled="true" autoHideEnabled="false" animationEnabled="true" glassStyleName="keypassEditor-PopUpPanel-glass" ui:field="popup">
+        <g:VerticalPanel>
+         
+        
+        <g:HTMLPanel>
+            <g:Image styleName="image" resource="{res.cerberus_logo_small}"/>
+            <div class="level0">
+                   	<g:Label styleName="header" ui:field="label"> 
+		        		Enter password store keycode
+					</g:Label>
+					
+                   	<g:Label styleName="body" ui:field="body" wordWrap="true"> 
+		        		Enter the password you will use to unlock the notes
+              				This password cannot be empty. But it can be this wide.
+					</g:Label>
+					
+                
+                    <g:PasswordTextBox ui:field="ptb" styleName="textEntry"/>
+
+                <div class="footer">  
+	                
+                    	<g:PushButton ui:field="button" styleName="okButton">
+						    <g:upFace image="{res.btn_create_keycode_password_off}"/>
+						    <g:upHoveringFace image="{res.btn_create_keycode_password_on}"/>
+						    <g:downFace image="{res.btn_create_keycode_password_on}"/>
+						</g:PushButton>
+                	              
+                </div>
+           </div>
+        </g:HTMLPanel>
+        </g:VerticalPanel>
+	</g:PopupPanel>        
+    </g:HTMLPanel>
+</ui:UiBinder>
