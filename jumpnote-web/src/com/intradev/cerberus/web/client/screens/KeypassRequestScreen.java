@@ -84,6 +84,8 @@ public class KeypassRequestScreen extends Screen {
     	this.callback = callback;
 
         
+    	
+    	
         if (JumpNoteWeb.sNotes.size() == 0) {
         	popup.setTitle("Enter the keycode you will use to unlock your password store");
         } else {
