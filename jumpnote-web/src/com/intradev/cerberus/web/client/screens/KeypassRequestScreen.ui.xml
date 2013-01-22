@@ -5,10 +5,10 @@
     xmlns:g="urn:import:com.google.gwt.user.client.ui">
     <ui:with type="com.intradev.cerberus.web.client.resources.Resources" field="res" />
     <g:HTMLPanel>
+
     <p class="big-text">
         Welcome to Cerberus!
     </p>
-    
     
     <g:PopupPanel styleName="keypassEditor-PopUpPanel" glassEnabled="true" autoHideEnabled="false" animationEnabled="true" glassStyleName="keypassEditor-PopUpPanel-glass" ui:field="popup">
         <g:VerticalPanel>
@@ -41,6 +41,7 @@
            </div>
         </g:HTMLPanel>
         </g:VerticalPanel>
-	</g:PopupPanel>        
+	</g:PopupPanel>    
+	    
     </g:HTMLPanel>
 </ui:UiBinder>
