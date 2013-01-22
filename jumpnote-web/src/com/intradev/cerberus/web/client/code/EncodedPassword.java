@@ -3,22 +3,22 @@ package com.intradev.cerberus.web.client.code;
 import com.google.gwt.json.client.JSONObject;
 import com.intradev.cerberus.web.client.ModelJso;
 
-public class EncodedNote {
+public class EncodedPassword {
 	
 	private ModelJso.Note impl;
 	
 	private String cachedBody;
 	private String cachedTitle;
 	
-	public EncodedNote(ModelJso.Note underlyingModel) {
+	public EncodedPassword(ModelJso.Note underlyingModel) {
 		impl = underlyingModel;
 	}
 	
-	public EncodedNote(String title, String body) {
+	public EncodedPassword(String title, String body) {
 		
 
 
-    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
     	String newTitle = nd.encodeTitle(title);
     	//impl.setTitle(newTitle);
     	
@@ -49,14 +49,14 @@ public class EncodedNote {
 //    	if (cachedTitle != null) {
 //    		return cachedTitle;
 //    	}
-    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
     	cachedTitle = nd.decodeTitle(impl.getTitle());  	
     	return cachedTitle;
     }
 //    public void setTitle(String title)
 //    {
 //    	cachedTitle=null;
-//    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+//    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
 //    	String newTitle = nd.encodeTitle(title);
 //    	impl.setTitle(newTitle);
 //    }
@@ -65,14 +65,14 @@ public class EncodedNote {
 //    	if (cachedBody != null) {
 //    		return cachedBody;
 //    	}
-    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
     	cachedBody = nd.decodeBody(impl.getBody());
     	return cachedBody;
     }
 //    public void setBody(String body)
 //    {
 //    	cachedBody=null;
-//    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+//    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
 //    	String newBody = nd.encodeBody(body);    	
 //    	impl.setBody(newBody);
 //    }
@@ -97,7 +97,7 @@ public class EncodedNote {
     }
     
     public boolean isDecodable() {
-    	NoteDecoder nd=NoteDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
     	return nd.isDecoderValid(impl.getBody());
     }
 

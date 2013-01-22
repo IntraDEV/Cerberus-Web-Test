@@ -1,7 +1,7 @@
 package com.intradev.cerberus.web.client.code;
 
 
-public class NoteDecoderDefault implements NoteDecoder {
+public class PasswordDecoderDefault implements PasswordDecoder {
 	
 	
 	public boolean isDecoderValid(String t) {

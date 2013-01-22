@@ -19,10 +19,10 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.intradev.cerberus.web.client.JumpNoteWeb;
+import com.intradev.cerberus.web.client.CerberusWeb;
 import com.intradev.cerberus.web.client.Screen;
-import com.intradev.cerberus.web.client.code.EncodedNote;
-import com.intradev.cerberus.web.client.code.NoteDecoderFactory;
+import com.intradev.cerberus.web.client.code.EncodedPassword;
+import com.intradev.cerberus.web.client.code.PasswordDecoderFactory;
 
 /**
  * The welcome screen, containing a simple message indicating that the user needs to sign in
@@ -55,14 +55,14 @@ public class KeypassRequestScreen extends Screen {
     private final PopupCompleteCallback callback;
     private ClickHandler listener;
     private HandlerRegistration handlerRegistration;
-    /*private JumpNoteWeb masterInstance;*/
+    /*private CerberusWeb masterInstance;*/
 
-    public KeypassRequestScreen(JumpNoteWeb instance, final PopupCompleteCallback callback) {
+    public KeypassRequestScreen(CerberusWeb instance, final PopupCompleteCallback callback) {
         initWidget(uiBinder.createAndBindUi(this));
         /*this.masterInstance = instance;*/
     	this.callback = callback;
     	
-        if (JumpNoteWeb.sNotes.size() == 0) {
+        if (CerberusWeb.sNotes.size() == 0) {
         	popup.setTitle("Enter the keycode you will use to unlock your password store");
         } else {
         	popup.setTitle("Enter the keycode to unlock your password store");     	
@@ -127,20 +127,20 @@ public class KeypassRequestScreen extends Screen {
     
     private void handleClick() {
     	String passcode = ptb.getValue();
-		if (passcode.length() < JumpNoteWeb.MIN_PASSCODE_LENGTH) {
-			JumpNoteWeb.showMessage("Cannot have an empty or short passcode",true);
+		if (passcode.length() < CerberusWeb.MIN_PASSCODE_LENGTH) {
+			CerberusWeb.showMessage("Cannot have an empty or short passcode",true);
 		} else {
-			if (JumpNoteWeb.sNotes.size() == 0) {
-				NoteDecoderFactory.installNoteDecoder(passcode);
+			if (CerberusWeb.sNotes.size() == 0) {
+				PasswordDecoderFactory.installNoteDecoder(passcode);
 				shutdownPopup();
 			} else {
-				NoteDecoderFactory.installNoteDecoder(passcode);
-				EncodedNote first=JumpNoteWeb.sNotes.entrySet().iterator().next().getValue();
+				PasswordDecoderFactory.installNoteDecoder(passcode);
+				EncodedPassword first=CerberusWeb.sNotes.entrySet().iterator().next().getValue();
 				if (first.isDecodable()) {
 					shutdownPopup();
 				} else {
 					//Stay in this state
-					JumpNoteWeb.showMessage("The passcode does not allow you to decode your notes",true);
+					CerberusWeb.showMessage("The passcode does not allow you to decode your notes",true);
 					ptb.setText("");						
 				}
 			}	

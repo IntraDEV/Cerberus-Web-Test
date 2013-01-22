@@ -22,9 +22,9 @@
   <inherits name="com.google.gwt.i18n.I18N"/>
   <inherits name='com.googlecode.gwt.crypto.Crypto'/>
 
-  <inherits name="com.intradev.cerberus.allshared.JumpNoteShared"/>
+  <inherits name="com.intradev.cerberus.allshared.CerberusShared"/>
 
-  <entry-point class="com.intradev.cerberus.web.client.JumpNoteWeb"/>
+  <entry-point class="com.intradev.cerberus.web.client.CerberusWeb"/>
 
   <source path="client"/>
   <source path="shared"/>

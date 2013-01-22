@@ -21,7 +21,7 @@ import com.googlecode.gwt.crypto.client.AESFastCipher;
 
 import com.google.gwt.user.client.Random;
 
-public class NoteDecoderImpl implements NoteDecoder {
+public class PasswordDecoderImpl implements PasswordDecoder {
 	
 	//private String passcode;
 	//private SecretKey key;
@@ -44,7 +44,7 @@ public class NoteDecoderImpl implements NoteDecoder {
         return key;
 	}
 	
-	NoteDecoderImpl(String passcode) {
+	PasswordDecoderImpl(String passcode) {
 		//this.passcode = passcode;
 		byte[] key=getKey(passcode);
 		//this.cipher = Cipher.getInstance("AES");

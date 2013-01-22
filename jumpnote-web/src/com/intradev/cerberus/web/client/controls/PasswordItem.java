@@ -31,16 +31,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
-import com.intradev.cerberus.web.client.code.EncodedNote;
+import com.intradev.cerberus.web.client.code.EncodedPassword;
 
 /**
  * A list item widget, representing a note.
  */
-public class NoteItem extends Composite {
+public class PasswordItem extends Composite {
 
     private static NoteItemUiBinder uiBinder = GWT.create(NoteItemUiBinder.class);
 
-    interface NoteItemUiBinder extends UiBinder<Widget, NoteItem> {
+    interface NoteItemUiBinder extends UiBinder<Widget, PasswordItem> {
     }
 
     @UiField
@@ -55,11 +55,11 @@ public class NoteItem extends Composite {
     @UiField
     PushButton deleteButton;
 
-    EncodedNote mNote;
+    EncodedPassword mNote;
 
     ActionCallback mActionCallback;
 
-    public NoteItem(EncodedNote note, ActionCallback actionCallback) {
+    public PasswordItem(EncodedPassword note, ActionCallback actionCallback) {
         initWidget(uiBinder.createAndBindUi(this));
 
         this.mNote = note;

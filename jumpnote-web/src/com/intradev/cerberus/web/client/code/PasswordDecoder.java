@@ -1,6 +1,6 @@
 package com.intradev.cerberus.web.client.code;
 
-public interface NoteDecoder {
+public interface PasswordDecoder {
 	
 	public String decodeTitle (String title);
 	public String decodeBody (String body);

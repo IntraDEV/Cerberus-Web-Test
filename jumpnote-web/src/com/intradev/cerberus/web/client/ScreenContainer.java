@@ -117,7 +117,7 @@ public class ScreenContainer extends SimplePanel {
             remove(mCurrentScreen);
             mCurrentScreen = null;
 
-            JumpNoteWeb.showMessage("Can't find that page.", false);
+            CerberusWeb.showMessage("Can't find that page.", false);
         }
     }
     

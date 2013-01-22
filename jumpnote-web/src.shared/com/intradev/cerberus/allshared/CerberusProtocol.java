@@ -16,7 +16,7 @@
 
 package com.intradev.cerberus.allshared;
 
-public final class JumpNoteProtocol {
+public final class CerberusProtocol {
     /**
      * For server messaging (Android C2DM), prevent feedback to the data change originator.
      */
@@ -36,43 +36,43 @@ public final class JumpNoteProtocol {
     }
 
     public static final class NotesList {
-        public static final String METHOD = "notes.list";
-        public static final String RET_NOTES = "notes";
+        public static final String METHOD = "passwords.list";
+        public static final String RET_PASSWORDS = "passwords";
     }
 
     public static final class NotesGet {
-        public static final String METHOD = "notes.get";
+        public static final String METHOD = "passwords.get";
         public static final String ARG_ID = "id";
-        public static final String RET_NOTE = "note";
+        public static final String RET_PASSWORDS = "note";
     }
     
     public static final class NotesCount {
-        public static final String METHOD = "notes.count";
+        public static final String METHOD = "passwords.count";
         public static final String RET_COUNT = "count";
     }
 
     public static final class NotesCreate {
-        public static final String METHOD = "notes.create";
-        public static final String ARG_NOTE = "note";
-        public static final String RET_NOTE = "note";
+        public static final String METHOD = "passwords.create";
+        public static final String ARG_NOTE = "password";
+        public static final String RET_NOTE = "password";
     }
 
     public static final class NotesEdit {
-        public static final String METHOD = "notes.edit";
-        public static final String ARG_NOTE = "note";
-        public static final String RET_NOTE = "note";
+        public static final String METHOD = "passwords.edit";
+        public static final String ARG_PASSWORD = "password";
+        public static final String RET_PASSWORD = "password";
     }
 
     public static final class NotesDelete {
-        public static final String METHOD = "notes.delete";
+        public static final String METHOD = "password.delete";
         public static final String ARG_ID = "id";
     }
 
     public static final class NotesSync {
-        public static final String METHOD = "notes.sync";
+        public static final String METHOD = "passwords.sync";
         public static final String ARG_SINCE_DATE = "since_date";
-        public static final String ARG_LOCAL_NOTES = "local_notes";
-        public static final String RET_NOTES = "notes";
+        public static final String ARG_LOCAL_PASSWORDS = "local_passwords";
+        public static final String RET_PASSWORDS = "password";
         public static final String RET_NEW_SINCE_DATE = "new_since_date";
     }
 

@@ -35,20 +35,20 @@ import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
-import com.intradev.cerberus.allshared.JumpNoteProtocol;
-import com.intradev.cerberus.web.client.JumpNoteWeb;
+import com.intradev.cerberus.allshared.CerberusProtocol;
+import com.intradev.cerberus.web.client.CerberusWeb;
 import com.intradev.cerberus.web.client.Screen;
-import com.intradev.cerberus.web.client.code.EncodedNote;
-import com.intradev.cerberus.web.client.controls.NoteItem;
+import com.intradev.cerberus.web.client.code.EncodedPassword;
+import com.intradev.cerberus.web.client.controls.PasswordItem;
 
 /**
  * The notes list screen.
  */
-public class NotesList extends Screen {
+public class PasswordList extends Screen {
 
     private static NotesListUiBinder uiBinder = GWT.create(NotesListUiBinder.class);
 
-    interface NotesListUiBinder extends UiBinder<Widget, NotesList> {
+    interface NotesListUiBinder extends UiBinder<Widget, PasswordList> {
     }
     
 
@@ -61,9 +61,9 @@ public class NotesList extends Screen {
     @UiField
     PushButton setKeyCodeButton;
     
-    private JumpNoteWeb masterInstance;
+    private CerberusWeb masterInstance;
 
-    public NotesList(JumpNoteWeb instance) {
+    public PasswordList(CerberusWeb instance) {
         initWidget(uiBinder.createAndBindUi(this));
         masterInstance = instance;
         refreshNotes();
@@ -71,39 +71,39 @@ public class NotesList extends Screen {
 
     @UiHandler("createButton")
     void onClick(ClickEvent e) {
-        History.newItem("note");
+        History.newItem("password");
     }
     
     @UiHandler("setKeyCodeButton")
     void onSetKeyCodeButton(ClickEvent e) {
         //History.newItem("note");
-    	JumpNoteWeb.showMessage("This will allow the user to change the keypass in the future", true);
+    	CerberusWeb.showMessage("This will allow the user to change the keypass in the future", true);
     	masterInstance.displayRequestKeypassScreen();
     }
 
     public void refreshNotes() {
     	passwordList.clear();
-        if (JumpNoteWeb.sNotes.keySet().isEmpty()) {
+        if (CerberusWeb.sNotes.keySet().isEmpty()) {
             Label emptyLabel = new Label();
             emptyLabel.setStyleName("empty");
-            emptyLabel.setText("You haven't written any notes, create one by clicking " +
-                    "'Create Note' below!");
+            emptyLabel.setText("You haven't written any passwords, create one by clicking " +
+                    "'Create Password' below!");
             passwordList.add(emptyLabel);
         } else {
-            List<EncodedNote> notes = new ArrayList<EncodedNote>();
-            for (String id : JumpNoteWeb.sNotes.keySet()) {
-            	EncodedNote note = JumpNoteWeb.sNotes.get(id);
+            List<EncodedPassword> notes = new ArrayList<EncodedPassword>();
+            for (String id : CerberusWeb.sNotes.keySet()) {
+            	EncodedPassword note = CerberusWeb.sNotes.get(id);
                 notes.add(note);
             }
 
-            Collections.sort(notes, new Comparator<EncodedNote>() {
-                public int compare(EncodedNote o1, EncodedNote o2) {
+            Collections.sort(notes, new Comparator<EncodedPassword>() {
+                public int compare(EncodedPassword o1, EncodedPassword o2) {
                     return o1.getTitle().compareTo(o2.getTitle());
                 }
             });
 
-            for (EncodedNote note : notes) {
-                NoteItem itemWidget = new NoteItem(note, mNoteItemActionCallback);
+            for (EncodedPassword note : notes) {
+                PasswordItem itemWidget = new PasswordItem(note, mNoteItemActionCallback);
                 passwordList.add(itemWidget);
             }
         }
@@ -115,24 +115,24 @@ public class NotesList extends Screen {
         return this;
     }
 
-    private NoteItem.ActionCallback mNoteItemActionCallback = new NoteItem.ActionCallback() {
+    private PasswordItem.ActionCallback mNoteItemActionCallback = new PasswordItem.ActionCallback() {
         public void onEdit(String noteId) {
-            History.newItem("note/" + noteId);
+            History.newItem("password/" + noteId);
         }
 
         public void onDelete(final String noteId) {
             JSONObject paramsJson = new JSONObject();
-            paramsJson.put(JumpNoteProtocol.NotesDelete.ARG_ID, new JSONString(noteId));
-            JumpNoteWeb.sJsonRpcClient.call(JumpNoteProtocol.NotesDelete.METHOD, paramsJson, new JsonRpcClient.Callback() {
+            paramsJson.put(CerberusProtocol.NotesDelete.ARG_ID, new JSONString(noteId));
+            CerberusWeb.sJsonRpcClient.call(CerberusProtocol.NotesDelete.METHOD, paramsJson, new JsonRpcClient.Callback() {
                 public void onSuccess(Object data) {
-                    EncodedNote note = JumpNoteWeb.sNotes.get(noteId);
-                    JumpNoteWeb.sNotes.remove(noteId);
-                    JumpNoteWeb.showMessage("Deleted note '" + note.getTitle() + "'", true);
+                    EncodedPassword note = CerberusWeb.sNotes.get(noteId);
+                    CerberusWeb.sNotes.remove(noteId);
+                    CerberusWeb.showMessage("Deleted password '" + note.getTitle() + "'", true);
                     refreshNotes();
                 }
 
                 public void onError(JsonRpcException caught) {
-                    JumpNoteWeb.showMessage("Delete failed: " + caught.getMessage(), false);
+                    CerberusWeb.showMessage("Delete failed: " + caught.getMessage(), false);
                 }
             });
         }

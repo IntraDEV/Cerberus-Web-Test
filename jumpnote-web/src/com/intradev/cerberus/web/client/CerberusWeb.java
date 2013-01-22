@@ -34,11 +34,11 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
-import com.intradev.cerberus.allshared.JumpNoteProtocol;
-import com.intradev.cerberus.web.client.code.EncodedNote;
+import com.intradev.cerberus.allshared.CerberusProtocol;
+import com.intradev.cerberus.web.client.code.EncodedPassword;
 import com.intradev.cerberus.web.client.screens.KeypassRequestScreen;
-import com.intradev.cerberus.web.client.screens.NoteEditor;
-import com.intradev.cerberus.web.client.screens.NotesList;
+import com.intradev.cerberus.web.client.screens.PasswordEditor;
+import com.intradev.cerberus.web.client.screens.PasswordList;
 import com.intradev.cerberus.web.client.screens.WelcomeScreen;
 import com.intradev.cerberus.web.jsonrpc.gwt.JsonRpcGwtClient;
 
@@ -46,7 +46,7 @@ import com.intradev.cerberus.web.jsonrpc.gwt.JsonRpcGwtClient;
 /**
  * The JumpNote web client entry point.
  */
-public class JumpNoteWeb implements EntryPoint {
+public class CerberusWeb implements EntryPoint {
 	public static final int TRANSIENT_MESSAGE_HIDE_DELAY = 5000;
 	public static final int MIN_PASSCODE_LENGTH = 4;
     
@@ -55,8 +55,8 @@ public class JumpNoteWeb implements EntryPoint {
     public static RootPanel sMessagePanel = null;
 
     private String sLoginUrl = "";
-    public static final JsonRpcGwtClient sJsonRpcClient = new JsonRpcGwtClient("/jumpnoterpc");
-    public static Map<String, EncodedNote> sNotes = new HashMap<String, EncodedNote>();
+    public static final JsonRpcGwtClient sJsonRpcClient = new JsonRpcGwtClient("/cerberusrpc");
+    public static Map<String, EncodedPassword> sNotes = new HashMap<String, EncodedPassword>();
     public static ModelJso.UserInfo sUserInfo = null;
 
     /*
@@ -90,9 +90,9 @@ public class JumpNoteWeb implements EntryPoint {
 			final RootPanel loginPanel = RootPanel.get("loginPanel");
 			// Process userInfo RPC call results
             JSONObject userInfoJson = (JSONObject) data;
-            if (userInfoJson.containsKey(JumpNoteProtocol.UserInfo.RET_USER)) {
-                JumpNoteWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
-                        JumpNoteProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
+            if (userInfoJson.containsKey(CerberusProtocol.UserInfo.RET_USER)) {
+                CerberusWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
+                        CerberusProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
                 InlineLabel label = new InlineLabel();
                 label.getElement().setId("userNameLabel");
                 label.setText(sUserInfo.getNick());
@@ -101,11 +101,11 @@ public class JumpNoteWeb implements EntryPoint {
                 loginPanel.add(new InlineLabel(" | "));
 
                 Anchor anchor = new Anchor("Sign out",
-                        userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGOUT_URL).isString()
+                        userInfoJson.get(CerberusProtocol.UserInfo.RET_LOGOUT_URL).isString()
                         .stringValue());
                 loginPanel.add(anchor);
             } else {
-                sLoginUrl = userInfoJson.get(JumpNoteProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
+                sLoginUrl = userInfoJson.get(CerberusProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
                 Anchor anchor = new Anchor("Sign in", sLoginUrl);
                 loginPanel.add(anchor);
             }
@@ -128,11 +128,11 @@ public class JumpNoteWeb implements EntryPoint {
             // Process notesList RPC call results
             JSONObject notesListJson = (JSONObject) data;
             if (notesListJson != null) {
-                JSONArray notesJson = notesListJson.get(JumpNoteProtocol.NotesList.RET_NOTES).isArray();
+                JSONArray notesJson = notesListJson.get(CerberusProtocol.NotesList.RET_PASSWORDS).isArray();
                 for (int i = 0; i < notesJson.size(); i++) {
                     ModelJso.Note note = (ModelJso.Note) notesJson.get(i).isObject()
                             .getJavaScriptObject();
-                    sNotes.put(note.getId(), new EncodedNote(note));
+                    sNotes.put(note.getId(), new EncodedPassword(note));
                 }
             }
                       
@@ -174,8 +174,8 @@ public class JumpNoteWeb implements EntryPoint {
     		displayRequestKeypassScreen();
     		break;
     	case STATE_REQUESTING_KEYCODE:
-    		mScreenContainer.addScreen("home", new NotesList(this));
-    		mScreenContainer.addScreen("note", new NoteEditor(this));
+    		mScreenContainer.addScreen("home", new PasswordList(this));
+    		mScreenContainer.addScreen("password", new PasswordEditor(this));
     		//mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
     		mScreenContainer.setDefault("home");
     		mScreenContainer.install(RootPanel.get("screenPanel"));
@@ -193,7 +193,7 @@ public class JumpNoteWeb implements EntryPoint {
     		break;
     	case STATE_REQUESTING_USERINFO:
     		//Did we get the login info? E.g. are we already logged in?
-    		if (JumpNoteWeb.sUserInfo == null) {
+    		if (CerberusWeb.sUserInfo == null) {
     			//We aren't logged in
     			//assert(sLoginUrl != null);    			
     			performPostFetchProcessing();
@@ -228,14 +228,14 @@ public class JumpNoteWeb implements EntryPoint {
     public void getUserLoginCookie(final JsonRpcClient.Callback callback) {
         // Get and populate login information
         JSONObject userInfoParams = new JSONObject();
-        userInfoParams.put(JumpNoteProtocol.UserInfo.ARG_LOGIN_CONTINUE,
+        userInfoParams.put(CerberusProtocol.UserInfo.ARG_LOGIN_CONTINUE,
                 new JSONString(Window.Location.getHref()));
 
-        sJsonRpcClient.call(JumpNoteProtocol.UserInfo.METHOD, userInfoParams, callback);
+        sJsonRpcClient.call(CerberusProtocol.UserInfo.METHOD, userInfoParams, callback);
     }
     
     public void loadData(final JsonRpcClient.Callback callback) {
-        sJsonRpcClient.call(JumpNoteProtocol.NotesList.METHOD, null, callback);
+        sJsonRpcClient.call(CerberusProtocol.NotesList.METHOD, null, callback);
     }
 
     public static void showMessage(String message, boolean isTransient) {

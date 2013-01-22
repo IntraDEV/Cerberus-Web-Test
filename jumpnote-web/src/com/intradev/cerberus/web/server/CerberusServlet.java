@@ -40,7 +40,7 @@ import com.google.appengine.api.users.User;
 import com.intradev.cerberus.allshared.AllConfig;
 import com.intradev.cerberus.allshared.JsonRpcException;
 import com.intradev.cerberus.allshared.JsonRpcMethod;
-import com.intradev.cerberus.allshared.JumpNoteProtocol;
+import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.javashared.Util;
 import com.intradev.cerberus.web.jsonrpc.server.JsonRpcServlet;
 import com.intradev.cerberus.web.server.ModelImpl.DeviceRegistration;
@@ -51,11 +51,11 @@ import com.intradev.cerberus.web.server.ModelImpl.UserInfo;
  * The server side implementation of the JumpNote JSON-RPC service.
  */
 @SuppressWarnings("serial")
-public class JumpNoteServlet extends JsonRpcServlet {
+public class CerberusServlet extends JsonRpcServlet {
 
     public static final int DEBUG = -1; // 1 == yes, 0 == no, -1 == decide based on server info
 
-    private static final Logger log = Logger.getLogger(JumpNoteServlet.class.getName());
+    private static final Logger log = Logger.getLogger(CerberusServlet.class.getName());
 
     private static final String PROTOCOL_VERSION = "1";
     public static final String DEVICE_TYPE_ANDROID = "android";
@@ -71,31 +71,31 @@ public class JumpNoteServlet extends JsonRpcServlet {
             return this.getServletContext().getServerInfo().contains("Development");
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.UserInfo.METHOD)
+    @JsonRpcMethod(method = CerberusProtocol.UserInfo.METHOD)
     public JSONObject userInfo(final CallContext context) throws JSONException, JsonRpcException {
         String continueUrl = context.getParams().optString(
-                JumpNoteProtocol.UserInfo.ARG_LOGIN_CONTINUE, "/");
+                CerberusProtocol.UserInfo.ARG_LOGIN_CONTINUE, "/");
 
         JSONObject data = new JSONObject();
         if (context.getUserService().isUserLoggedIn()) {
             UserInfo userInfo = new UserInfo(context.getUserService().getCurrentUser());
-            data.put(JumpNoteProtocol.UserInfo.RET_USER, userInfo.toJSON());
-            data.put(JumpNoteProtocol.UserInfo.RET_LOGOUT_URL, context.getUserService().createLogoutURL(continueUrl));
+            data.put(CerberusProtocol.UserInfo.RET_USER, userInfo.toJSON());
+            data.put(CerberusProtocol.UserInfo.RET_LOGOUT_URL, context.getUserService().createLogoutURL(continueUrl));
         } else {
-            data.put(JumpNoteProtocol.UserInfo.RET_LOGIN_URL, context.getUserService().createLoginURL(continueUrl));
+            data.put(CerberusProtocol.UserInfo.RET_LOGIN_URL, context.getUserService().createLoginURL(continueUrl));
         }
 
         return data;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.ServerInfo.METHOD)
+    @JsonRpcMethod(method = CerberusProtocol.ServerInfo.METHOD)
     public JSONObject serverInfo(final CallContext context) throws JSONException, JsonRpcException {
         JSONObject responseJson = new JSONObject();
-        responseJson.put(JumpNoteProtocol.ServerInfo.RET_PROTOCOL_VERSION, PROTOCOL_VERSION);
+        responseJson.put(CerberusProtocol.ServerInfo.RET_PROTOCOL_VERSION, PROTOCOL_VERSION);
         return responseJson;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesList.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesList.METHOD, requires_login = true)
     public JSONObject notesList(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
@@ -113,7 +113,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
                 notesJson.put(note.toJSON());
             }
 
-            responseJson.put(JumpNoteProtocol.NotesList.RET_NOTES, notesJson);
+            responseJson.put(CerberusProtocol.NotesList.RET_PASSWORDS, notesJson);
         } catch (JSONException e) {
             throw new JsonRpcException(500, "Error serializing response.", e);
         }
@@ -121,11 +121,11 @@ public class JumpNoteServlet extends JsonRpcServlet {
         return responseJson;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesGet.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesGet.METHOD, requires_login = true)
     public JSONObject notesGet(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
-        String noteId = context.getParams().getString(JumpNoteProtocol.NotesGet.ARG_ID);
+        String noteId = context.getParams().getString(CerberusProtocol.NotesGet.ARG_ID);
         Key noteKey = Note.makeKey(userInfo.getId(), noteId);
         try {
             Note note = context.getPersistenceManager().getObjectById(Note.class, noteKey);
@@ -133,15 +133,15 @@ public class JumpNoteServlet extends JsonRpcServlet {
                 throw new JDOObjectNotFoundException();
             }
             if (!note.getOwnerId().equals(userInfo.getId())) {
-                throw new JsonRpcException(403, "You do not have permission to access this note.");
+                throw new JsonRpcException(403, "You do not have permission to access this password.");
             }
             return (JSONObject) note.toJSON();
         } catch (JDOObjectNotFoundException e) {
-            throw new JsonRpcException(404, "Note with ID " + noteId + " does not exist.");
+            throw new JsonRpcException(404, "Password with ID " + noteId + " does not exist.");
         }
     }
     
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesCount.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesCount.METHOD, requires_login = true)
     public JSONObject notesCount(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
@@ -154,7 +154,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
 
         JSONObject responseJson = new JSONObject();
         try {
-            responseJson.put(JumpNoteProtocol.NotesCount.RET_COUNT, Integer.toString(notes.size()));
+            responseJson.put(CerberusProtocol.NotesCount.RET_COUNT, Integer.toString(notes.size()));
         } catch (JSONException e) {
             throw new JsonRpcException(500, "Error serializing response.", e);
         }
@@ -162,7 +162,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
         return responseJson;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesCreate.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesCreate.METHOD, requires_login = true)
     public JSONObject notesCreate(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
@@ -170,12 +170,12 @@ public class JumpNoteServlet extends JsonRpcServlet {
         JSONObject noteJson;
         Note note;
         try {
-            clientDeviceId = context.getParams().optString(JumpNoteProtocol.ARG_CLIENT_DEVICE_ID);
-            noteJson = context.getParams().getJSONObject(JumpNoteProtocol.NotesCreate.ARG_NOTE);
+            clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
+            noteJson = context.getParams().getJSONObject(CerberusProtocol.NotesCreate.ARG_NOTE);
             noteJson.put("owner_id", userInfo.getId());
             note = new Note(noteJson);
         } catch (JSONException e) {
-            throw new JsonRpcException(400, "Invalid note parameter.", e);
+            throw new JsonRpcException(400, "Invalid password parameter.", e);
         }
 
         context.getPersistenceManager().makePersistent(note);
@@ -184,7 +184,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
         enqueueDeviceMessage(context.getPersistenceManager(), userInfo, clientDeviceId);
         
         JSONObject responseJson = new JSONObject();
-        responseJson.put(JumpNoteProtocol.NotesCreate.RET_NOTE, noteJson);
+        responseJson.put(CerberusProtocol.NotesCreate.RET_NOTE, noteJson);
         return responseJson;
     }
     
@@ -229,7 +229,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
                 userInfo.getEmail() + ".");
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesEdit.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesEdit.METHOD, requires_login = true)
     public JSONObject notesEdit(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
@@ -239,8 +239,8 @@ public class JumpNoteServlet extends JsonRpcServlet {
         String noteId = "n/a";
         Transaction tx = context.getPersistenceManager().currentTransaction();
         try {
-            clientDeviceId = context.getParams().optString(JumpNoteProtocol.ARG_CLIENT_DEVICE_ID);
-            noteJson = context.getParams().getJSONObject(JumpNoteProtocol.NotesEdit.ARG_NOTE);
+            clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
+            noteJson = context.getParams().getJSONObject(CerberusProtocol.NotesEdit.ARG_PASSWORD);
             noteId = noteJson.getString("id");
             Key noteKey = Note.makeKey(userInfo.getId(), noteId);
 
@@ -266,11 +266,11 @@ public class JumpNoteServlet extends JsonRpcServlet {
 
         noteJson = (JSONObject) note.toJSON(); // get more parameters like ID, creation date, etc.
         JSONObject responseJson = new JSONObject();
-        responseJson.put(JumpNoteProtocol.NotesEdit.RET_NOTE, noteJson);
+        responseJson.put(CerberusProtocol.NotesEdit.RET_PASSWORD, noteJson);
         return responseJson;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesDelete.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesDelete.METHOD, requires_login = true)
     public JSONObject notesDelete(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
@@ -278,8 +278,8 @@ public class JumpNoteServlet extends JsonRpcServlet {
         Note note;
         String noteId;
         try {
-            clientDeviceId = context.getParams().optString(JumpNoteProtocol.ARG_CLIENT_DEVICE_ID);
-            noteId = context.getParams().getString(JumpNoteProtocol.NotesDelete.ARG_ID);
+            clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
+            noteId = context.getParams().getString(CerberusProtocol.NotesDelete.ARG_ID);
         } catch (JSONException e) {
             throw new JsonRpcException(400, "Invalid note ID.", e);
         }
@@ -310,7 +310,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
         return null;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.NotesSync.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.NotesSync.METHOD, requires_login = true)
     public JSONObject notesSync(final CallContext context) throws JSONException, JsonRpcException {
         // This method should return a list of updated notes since a current
         // date, optionally reconciling/merging a set of a local notes.
@@ -319,8 +319,8 @@ public class JumpNoteServlet extends JsonRpcServlet {
         Date sinceDate;
 
         try {
-            clientDeviceId = context.getParams().optString(JumpNoteProtocol.ARG_CLIENT_DEVICE_ID);
-            sinceDate = Util.parseDateISO8601(context.getParams().getString(JumpNoteProtocol.NotesSync.ARG_SINCE_DATE));
+            clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
+            sinceDate = Util.parseDateISO8601(context.getParams().getString(CerberusProtocol.NotesSync.ARG_SINCE_DATE));
         } catch (ParseException e) {
             throw new JsonRpcException(400, "Invalid since_date.", e);
         } catch (JSONException e) {
@@ -334,8 +334,8 @@ public class JumpNoteServlet extends JsonRpcServlet {
         try {
             tx.begin();
             List<Note> localNotes = new ArrayList<Note>();
-            if (context.getParams().has(JumpNoteProtocol.NotesSync.ARG_LOCAL_NOTES)) {
-                JSONArray localChangesJson = context.getParams().getJSONArray(JumpNoteProtocol.NotesSync.ARG_LOCAL_NOTES);
+            if (context.getParams().has(CerberusProtocol.NotesSync.ARG_LOCAL_PASSWORDS)) {
+                JSONArray localChangesJson = context.getParams().getJSONArray(CerberusProtocol.NotesSync.ARG_LOCAL_PASSWORDS);
                 for (int i = 0; i < localChangesJson.length(); i++) {
                     try {
                         JSONObject noteJson = localChangesJson.getJSONObject(i);
@@ -410,20 +410,20 @@ public class JumpNoteServlet extends JsonRpcServlet {
 
         enqueueDeviceMessage(context.getPersistenceManager(), userInfo, clientDeviceId);
 
-        responseJson.put(JumpNoteProtocol.NotesSync.RET_NOTES, notesJson);
-        responseJson.put(JumpNoteProtocol.NotesSync.RET_NEW_SINCE_DATE,
+        responseJson.put(CerberusProtocol.NotesSync.RET_PASSWORDS, notesJson);
+        responseJson.put(CerberusProtocol.NotesSync.RET_NEW_SINCE_DATE,
                 Util.formatDateISO8601(newSinceDate));
         return responseJson;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.DevicesRegister.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.DevicesRegister.METHOD, requires_login = true)
     public JSONObject devicesRegister(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
         JSONObject registrationJson;
         DeviceRegistration registrationParam;
         try {
-            registrationJson = context.getParams().getJSONObject(JumpNoteProtocol.DevicesRegister.ARG_DEVICE);
+            registrationJson = context.getParams().getJSONObject(CerberusProtocol.DevicesRegister.ARG_DEVICE);
             registrationJson.put("owner_id", userInfo.getId());
             registrationParam = new DeviceRegistration(registrationJson);
         } catch (JSONException e) {
@@ -462,17 +462,17 @@ public class JumpNoteServlet extends JsonRpcServlet {
         registrationJson = (JSONObject) registrationParam.toJSON();
 
         JSONObject responseJson = new JSONObject();
-        responseJson.put(JumpNoteProtocol.DevicesRegister.RET_DEVICE, registrationJson);
+        responseJson.put(CerberusProtocol.DevicesRegister.RET_DEVICE, registrationJson);
         return responseJson;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.DevicesUnregister.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.DevicesUnregister.METHOD, requires_login = true)
     public JSONObject devicesUnregister(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
         String deviceId;
         try {
-            deviceId = context.getParams().getString(JumpNoteProtocol.DevicesUnregister.ARG_DEVICE_ID);
+            deviceId = context.getParams().getString(CerberusProtocol.DevicesUnregister.ARG_DEVICE_ID);
         } catch (JSONException e) {
             throw new JsonRpcException(400, "Invalid device ID parameter.", e);
         }
@@ -504,7 +504,7 @@ public class JumpNoteServlet extends JsonRpcServlet {
         return null;
     }
 
-    @JsonRpcMethod(method = JumpNoteProtocol.DevicesClear.METHOD, requires_login = true)
+    @JsonRpcMethod(method = CerberusProtocol.DevicesClear.METHOD, requires_login = true)
     public JSONObject devicesClear(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 

@@ -34,24 +34,24 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
-import com.intradev.cerberus.allshared.JumpNoteProtocol;
-import com.intradev.cerberus.allshared.JumpNoteProtocol.NotesCreate;
-import com.intradev.cerberus.allshared.JumpNoteProtocol.NotesEdit;
-import com.intradev.cerberus.web.client.JumpNoteWeb;
+import com.intradev.cerberus.allshared.CerberusProtocol;
+import com.intradev.cerberus.allshared.CerberusProtocol.NotesCreate;
+import com.intradev.cerberus.allshared.CerberusProtocol.NotesEdit;
+import com.intradev.cerberus.web.client.CerberusWeb;
 import com.intradev.cerberus.web.client.ModelJso;
 import com.intradev.cerberus.web.client.Screen;
-import com.intradev.cerberus.web.client.code.EncodedNote;
+import com.intradev.cerberus.web.client.code.EncodedPassword;
 
 import java.util.List;
 
 /**
  * The create/edit note screen.
  */
-public class NoteEditor extends Screen {
+public class PasswordEditor extends Screen {
 
     private static NoteEditorUiBinder uiBinder = GWT.create(NoteEditorUiBinder.class);
 
-    interface NoteEditorUiBinder extends UiBinder<Widget, NoteEditor> {
+    interface NoteEditorUiBinder extends UiBinder<Widget, PasswordEditor> {
     }
 
     private String mEditNoteId;
@@ -72,20 +72,20 @@ public class NoteEditor extends Screen {
     PushButton revertButton;
     
     
-    private JumpNoteWeb masterInstance;
+    private CerberusWeb masterInstance;
 
-    public NoteEditor(JumpNoteWeb instance) {
+    public PasswordEditor(CerberusWeb instance) {
         initWidget(uiBinder.createAndBindUi(this));
         masterInstance = instance;
-        heading.setInnerText("New Note");
+        heading.setInnerText("New Password");
     }
 
-    public NoteEditor(String editNoteId) {
+    public PasswordEditor(String editNoteId) {
         this.mEditNoteId = editNoteId;
         initWidget(uiBinder.createAndBindUi(this));
-        heading.setInnerText("Editing note: " + editNoteId);
-        passwordTitle.setText(JumpNoteWeb.sNotes.get(mEditNoteId).getTitle());
-        passwordBody.setText(JumpNoteWeb.sNotes.get(mEditNoteId).getBody());
+        heading.setInnerText("Editing password: " + editNoteId);
+        passwordTitle.setText(CerberusWeb.sNotes.get(mEditNoteId).getTitle());
+        passwordBody.setText(CerberusWeb.sNotes.get(mEditNoteId).getBody());
     }
 
     @Override
@@ -96,12 +96,12 @@ public class NoteEditor extends Screen {
                 this.passwordBody.setText("");
                 return this;
             } else
-                return new NoteEditor(masterInstance);
+                return new PasswordEditor(masterInstance);
         } else if (args.size() == 1) {
             if (args.get(0).equals(mEditNoteId))
                 return this;
             else
-                return new NoteEditor(args.get(0));
+                return new PasswordEditor(args.get(0));
         }
 
         return null;
@@ -109,7 +109,7 @@ public class NoteEditor extends Screen {
 
     @Override
     public void onShow() {
-        JumpNoteWeb.hideMessage();
+        CerberusWeb.hideMessage();
         passwordTitle.setFocus(true);
         super.onShow();
     }
@@ -118,33 +118,33 @@ public class NoteEditor extends Screen {
     void onSaveClick(ClickEvent e) {
         String method;
 
-        EncodedNote note = new EncodedNote(passwordTitle.getText(), passwordBody.getText());
+        EncodedPassword note = new EncodedPassword(passwordTitle.getText(), passwordBody.getText());
 
         if (mEditNoteId == null) {
-            method = JumpNoteProtocol.NotesCreate.METHOD;
+            method = CerberusProtocol.NotesCreate.METHOD;
         } else {
-            method = JumpNoteProtocol.NotesEdit.METHOD;
+            method = CerberusProtocol.NotesEdit.METHOD;
             note.setId(mEditNoteId);
         }
 
         JSONObject paramsJson = new JSONObject();
-        assert(NotesCreate.ARG_NOTE.compareTo(NotesEdit.ARG_NOTE)==0);
-        //paramsJson.put(JumpNoteProtocol.NotesEdit.ARG_NOTE, new JSONObject(note));
-        paramsJson.put(JumpNoteProtocol.NotesEdit.ARG_NOTE, note.getJSONObject());
+        assert(NotesCreate.ARG_NOTE.compareTo(NotesEdit.ARG_PASSWORD)==0);
+        //paramsJson.put(CerberusProtocol.NotesEdit.ARG_PASSWORD, new JSONObject(note));
+        paramsJson.put(CerberusProtocol.NotesEdit.ARG_PASSWORD, note.getJSONObject());
 
-        JumpNoteWeb.showMessage("Saving...", false);
-        JumpNoteWeb.sJsonRpcClient.call(method, paramsJson, new JsonRpcClient.Callback() {
+        CerberusWeb.showMessage("Saving...", false);
+        CerberusWeb.sJsonRpcClient.call(method, paramsJson, new JsonRpcClient.Callback() {
             public void onSuccess(Object data) {
                 JSONObject responseJson = (JSONObject) data;
-                ModelJso.Note note = (ModelJso.Note) responseJson.get(JumpNoteProtocol.NotesEdit.RET_NOTE)
+                ModelJso.Note note = (ModelJso.Note) responseJson.get(CerberusProtocol.NotesEdit.RET_PASSWORD)
                         .isObject().getJavaScriptObject();
-                JumpNoteWeb.sNotes.put(note.getId(), new EncodedNote(note));
-                JumpNoteWeb.showMessage("Note saved.", true);
+                CerberusWeb.sNotes.put(note.getId(), new EncodedPassword(note));
+                CerberusWeb.showMessage("Password saved.", true);
                 History.newItem("home");
             }
 
             public void onError(JsonRpcException caught) {
-                JumpNoteWeb.showMessage("Error saving: " + caught.getMessage(), false);
+                CerberusWeb.showMessage("Error saving: " + caught.getMessage(), false);
             }
         });
     }

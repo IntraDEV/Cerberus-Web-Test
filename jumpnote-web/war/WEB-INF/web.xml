@@ -22,7 +22,7 @@
   <!-- Servlets -->
   <servlet>
     <servlet-name>rpcServlet</servlet-name>
-    <servlet-class>com.intradev.cerberus.web.server.JumpNoteServlet</servlet-class>
+    <servlet-class>com.intradev.cerberus.web.server.CerberusServlet</servlet-class>
   </servlet>
 
   <servlet>
@@ -32,7 +32,7 @@
 
   <servlet-mapping>
     <servlet-name>rpcServlet</servlet-name>
-    <url-pattern>/jumpnoterpc</url-pattern>
+    <url-pattern>/cerberusrpc</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
