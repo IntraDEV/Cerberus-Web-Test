@@ -5,12 +5,12 @@ public class PasswordDecoderFactory {
 	private static PasswordDecoder passwordDecoder = new PasswordDecoderDefault();
 	
 	
-	public static void installNoteDecoder (String passcode) {
+	public static void installPasswordDecoder (String passcode) {
 		passwordDecoder = new PasswordDecoderImpl(passcode);
 		
 	}
 	
-	public static PasswordDecoder getNoteDecoder() {
+	public static PasswordDecoder getPasswordDecoder() {
 		return passwordDecoder;
 	}
 

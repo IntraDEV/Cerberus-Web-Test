@@ -18,8 +18,8 @@
 					</g:Label>
 					
                    	<g:Label styleName="body" ui:field="body" wordWrap="true"> 
-		        		Enter the password you will use to unlock the notes
-              				This password cannot be empty. But it can be this wide.
+		        		Enter the keycode you will use to unlock the passwords
+              				This keycode cannot be empty.
 					</g:Label>
 					
                 

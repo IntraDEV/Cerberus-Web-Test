@@ -35,8 +35,8 @@ import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
 import com.intradev.cerberus.allshared.CerberusProtocol;
-import com.intradev.cerberus.allshared.CerberusProtocol.NotesCreate;
-import com.intradev.cerberus.allshared.CerberusProtocol.NotesEdit;
+import com.intradev.cerberus.allshared.CerberusProtocol.PasswordsCreate;
+import com.intradev.cerberus.allshared.CerberusProtocol.PasswordssEdit;
 import com.intradev.cerberus.web.client.CerberusWeb;
 import com.intradev.cerberus.web.client.ModelJso;
 import com.intradev.cerberus.web.client.Screen;
@@ -45,16 +45,16 @@ import com.intradev.cerberus.web.client.code.EncodedPassword;
 import java.util.List;
 
 /**
- * The create/edit note screen.
+ * The create/edit password screen.
  */
 public class PasswordEditor extends Screen {
 
-    private static NoteEditorUiBinder uiBinder = GWT.create(NoteEditorUiBinder.class);
+    private static PasswordEditorUiBinder uiBinder = GWT.create(PasswordEditorUiBinder.class);
 
-    interface NoteEditorUiBinder extends UiBinder<Widget, PasswordEditor> {
+    interface PasswordEditorUiBinder extends UiBinder<Widget, PasswordEditor> {
     }
 
-    private String mEditNoteId;
+    private String mEditPasswordId;
 
     @UiField
     HeadingElement heading;
@@ -80,25 +80,25 @@ public class PasswordEditor extends Screen {
         heading.setInnerText("New Password");
     }
 
-    public PasswordEditor(String editNoteId) {
-        this.mEditNoteId = editNoteId;
+    public PasswordEditor(String editPasswordId) {
+        this.mEditPasswordId = editPasswordId;
         initWidget(uiBinder.createAndBindUi(this));
-        heading.setInnerText("Editing password: " + editNoteId);
-        passwordTitle.setText(CerberusWeb.sNotes.get(mEditNoteId).getTitle());
-        passwordBody.setText(CerberusWeb.sNotes.get(mEditNoteId).getBody());
+        heading.setInnerText("Editing password: " + editPasswordId);
+        passwordTitle.setText(CerberusWeb.sPasswords.get(mEditPasswordId).getTitle());
+        passwordBody.setText(CerberusWeb.sPasswords.get(mEditPasswordId).getBody());
     }
 
     @Override
     public Screen fillOrReplace(List<String> args) {
         if (args.size() == 0) {
-            if (mEditNoteId == null) {
+            if (mEditPasswordId == null) {
                 this.passwordTitle.setText("");
                 this.passwordBody.setText("");
                 return this;
             } else
                 return new PasswordEditor(masterInstance);
         } else if (args.size() == 1) {
-            if (args.get(0).equals(mEditNoteId))
+            if (args.get(0).equals(mEditPasswordId))
                 return this;
             else
                 return new PasswordEditor(args.get(0));
@@ -118,27 +118,27 @@ public class PasswordEditor extends Screen {
     void onSaveClick(ClickEvent e) {
         String method;
 
-        EncodedPassword note = new EncodedPassword(passwordTitle.getText(), passwordBody.getText());
+        EncodedPassword password = new EncodedPassword(passwordTitle.getText(), passwordBody.getText());
 
-        if (mEditNoteId == null) {
-            method = CerberusProtocol.NotesCreate.METHOD;
+        if (mEditPasswordId == null) {
+            method = CerberusProtocol.PasswordsCreate.METHOD;
         } else {
-            method = CerberusProtocol.NotesEdit.METHOD;
-            note.setId(mEditNoteId);
+            method = CerberusProtocol.PasswordssEdit.METHOD;
+            password.setId(mEditPasswordId);
         }
 
         JSONObject paramsJson = new JSONObject();
-        assert(NotesCreate.ARG_NOTE.compareTo(NotesEdit.ARG_PASSWORD)==0);
-        //paramsJson.put(CerberusProtocol.NotesEdit.ARG_PASSWORD, new JSONObject(note));
-        paramsJson.put(CerberusProtocol.NotesEdit.ARG_PASSWORD, note.getJSONObject());
+        assert(PasswordsCreate.ARG_PASSWORD.compareTo(PasswordssEdit.ARG_PASSWORD)==0);
+        
+        paramsJson.put(CerberusProtocol.PasswordssEdit.ARG_PASSWORD, password.getJSONObject());
 
         CerberusWeb.showMessage("Saving...", false);
         CerberusWeb.sJsonRpcClient.call(method, paramsJson, new JsonRpcClient.Callback() {
             public void onSuccess(Object data) {
                 JSONObject responseJson = (JSONObject) data;
-                ModelJso.Note note = (ModelJso.Note) responseJson.get(CerberusProtocol.NotesEdit.RET_PASSWORD)
+                ModelJso.Password password = (ModelJso.Password) responseJson.get(CerberusProtocol.PasswordssEdit.RET_PASSWORD)
                         .isObject().getJavaScriptObject();
-                CerberusWeb.sNotes.put(note.getId(), new EncodedPassword(note));
+                CerberusWeb.sPasswords.put(password.getId(), new EncodedPassword(password));
                 CerberusWeb.showMessage("Password saved.", true);
                 History.newItem("home");
             }

@@ -22,20 +22,20 @@ import com.intradev.cerberus.allshared.Model;
 import java.util.Date;
 
 /**
- * Data model implementation for the JumpNote GWT client. ModelJso serves more as a
+ * Data model implementation for the Cerberus GWT client. ModelJso serves more as a
  * namespace than a class, for convenience. The base interfaces are defined in
  * the {@link Model} class.
  */
 public class ModelJso {
-    public static final class Note extends JavaScriptObject implements Model.Note {
-        protected Note() {
+    public static final class Password extends JavaScriptObject implements Model.Password {
+        protected Password() {
         }
 
-        public static native Note create(String id, String title, String body) /*-{
+        public static native Password create(String id, String title, String body) /*-{
             return {id: id, title: title, body: body};
         }-*/;
 
-        public static native Note create(String title, String body) /*-{
+        public static native Password create(String title, String body) /*-{
             return {title: title, body: body};
         }-*/;
 

@@ -5,12 +5,12 @@ import com.intradev.cerberus.web.client.ModelJso;
 
 public class EncodedPassword {
 	
-	private ModelJso.Note impl;
+	private ModelJso.Password impl;
 	
 	private String cachedBody;
 	private String cachedTitle;
 	
-	public EncodedPassword(ModelJso.Note underlyingModel) {
+	public EncodedPassword(ModelJso.Password underlyingModel) {
 		impl = underlyingModel;
 	}
 	
@@ -18,14 +18,14 @@ public class EncodedPassword {
 		
 
 
-    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getPasswordDecoder();
     	String newTitle = nd.encodeTitle(title);
     	//impl.setTitle(newTitle);
     	
     	String newBody = nd.encodeBody(body);    	
     	//impl.setBody(newBody);
 		
-    	impl = ModelJso.Note.create(newTitle, newBody);
+    	impl = ModelJso.Password.create(newTitle, newBody);
 		
 	}
 	
@@ -46,58 +46,24 @@ public class EncodedPassword {
 	
     public String getTitle()
     {
-//    	if (cachedTitle != null) {
-//    		return cachedTitle;
-//    	}
-    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getPasswordDecoder();
     	cachedTitle = nd.decodeTitle(impl.getTitle());  	
     	return cachedTitle;
     }
-//    public void setTitle(String title)
-//    {
-//    	cachedTitle=null;
-//    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
-//    	String newTitle = nd.encodeTitle(title);
-//    	impl.setTitle(newTitle);
-//    }
+
     public String getBody()
     {
-//    	if (cachedBody != null) {
-//    		return cachedBody;
-//    	}
-    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getPasswordDecoder();
     	cachedBody = nd.decodeBody(impl.getBody());
     	return cachedBody;
-    }
-//    public void setBody(String body)
-//    {
-//    	cachedBody=null;
-//    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
-//    	String newBody = nd.encodeBody(body);    	
-//    	impl.setBody(newBody);
-//    }
-
-//	public boolean isPendingDelete() {
-//		return impl.isPendingDelete();
-//	}
-//
-//
-//	public Date getCreatedDate() {
-//		return impl.getCreatedDate();
-//	}
-//
-//
-//	public Date getModifiedDate() {
-//		return impl.getModifiedDate();
-//	}
-	
+    }	
     
     public JSONObject getJSONObject() {
     	return new JSONObject(impl);
     }
     
     public boolean isDecodable() {
-    	PasswordDecoder nd=PasswordDecoderFactory.getNoteDecoder();
+    	PasswordDecoder nd=PasswordDecoderFactory.getPasswordDecoder();
     	return nd.isDecoderValid(impl.getBody());
     }
 

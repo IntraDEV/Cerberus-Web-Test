@@ -42,13 +42,13 @@ import com.intradev.cerberus.web.client.code.EncodedPassword;
 import com.intradev.cerberus.web.client.controls.PasswordItem;
 
 /**
- * The notes list screen.
+ * The passwords list screen.
  */
 public class PasswordList extends Screen {
 
-    private static NotesListUiBinder uiBinder = GWT.create(NotesListUiBinder.class);
+    private static PasswordsListUiBinder uiBinder = GWT.create(PasswordsListUiBinder.class);
 
-    interface NotesListUiBinder extends UiBinder<Widget, PasswordList> {
+    interface PasswordsListUiBinder extends UiBinder<Widget, PasswordList> {
     }
     
 
@@ -66,7 +66,7 @@ public class PasswordList extends Screen {
     public PasswordList(CerberusWeb instance) {
         initWidget(uiBinder.createAndBindUi(this));
         masterInstance = instance;
-        refreshNotes();
+        refreshPasswords();
     }
 
     @UiHandler("createButton")
@@ -76,34 +76,33 @@ public class PasswordList extends Screen {
     
     @UiHandler("setKeyCodeButton")
     void onSetKeyCodeButton(ClickEvent e) {
-        //History.newItem("note");
     	CerberusWeb.showMessage("This will allow the user to change the keypass in the future", true);
     	masterInstance.displayRequestKeypassScreen();
     }
 
-    public void refreshNotes() {
+    public void refreshPasswords() {
     	passwordList.clear();
-        if (CerberusWeb.sNotes.keySet().isEmpty()) {
+        if (CerberusWeb.sPasswords.keySet().isEmpty()) {
             Label emptyLabel = new Label();
             emptyLabel.setStyleName("empty");
             emptyLabel.setText("You haven't written any passwords, create one by clicking " +
                     "'Create Password' below!");
             passwordList.add(emptyLabel);
         } else {
-            List<EncodedPassword> notes = new ArrayList<EncodedPassword>();
-            for (String id : CerberusWeb.sNotes.keySet()) {
-            	EncodedPassword note = CerberusWeb.sNotes.get(id);
-                notes.add(note);
+            List<EncodedPassword> passwords = new ArrayList<EncodedPassword>();
+            for (String id : CerberusWeb.sPasswords.keySet()) {
+            	EncodedPassword password = CerberusWeb.sPasswords.get(id);
+                passwords.add(password);
             }
 
-            Collections.sort(notes, new Comparator<EncodedPassword>() {
+            Collections.sort(passwords, new Comparator<EncodedPassword>() {
                 public int compare(EncodedPassword o1, EncodedPassword o2) {
                     return o1.getTitle().compareTo(o2.getTitle());
                 }
             });
 
-            for (EncodedPassword note : notes) {
-                PasswordItem itemWidget = new PasswordItem(note, mNoteItemActionCallback);
+            for (EncodedPassword password : passwords) {
+                PasswordItem itemWidget = new PasswordItem(password, mPasswordItemActionCallback);
                 passwordList.add(itemWidget);
             }
         }
@@ -111,24 +110,24 @@ public class PasswordList extends Screen {
 
     @Override
     public Screen fillOrReplace(List<String> args) {
-        refreshNotes();
+        refreshPasswords();
         return this;
     }
 
-    private PasswordItem.ActionCallback mNoteItemActionCallback = new PasswordItem.ActionCallback() {
-        public void onEdit(String noteId) {
-            History.newItem("password/" + noteId);
+    private PasswordItem.ActionCallback mPasswordItemActionCallback = new PasswordItem.ActionCallback() {
+        public void onEdit(String passwordId) {
+            History.newItem("password/" + passwordId);
         }
 
-        public void onDelete(final String noteId) {
+        public void onDelete(final String passwordId) {
             JSONObject paramsJson = new JSONObject();
-            paramsJson.put(CerberusProtocol.NotesDelete.ARG_ID, new JSONString(noteId));
-            CerberusWeb.sJsonRpcClient.call(CerberusProtocol.NotesDelete.METHOD, paramsJson, new JsonRpcClient.Callback() {
+            paramsJson.put(CerberusProtocol.PasswordsDelete.ARG_ID, new JSONString(passwordId));
+            CerberusWeb.sJsonRpcClient.call(CerberusProtocol.PasswordsDelete.METHOD, paramsJson, new JsonRpcClient.Callback() {
                 public void onSuccess(Object data) {
-                    EncodedPassword note = CerberusWeb.sNotes.get(noteId);
-                    CerberusWeb.sNotes.remove(noteId);
-                    CerberusWeb.showMessage("Deleted password '" + note.getTitle() + "'", true);
-                    refreshNotes();
+                    EncodedPassword password = CerberusWeb.sPasswords.get(passwordId);
+                    CerberusWeb.sPasswords.remove(passwordId);
+                    CerberusWeb.showMessage("Deleted password '" + password.getTitle() + "'", true);
+                    refreshPasswords();
                 }
 
                 public void onError(JsonRpcException caught) {

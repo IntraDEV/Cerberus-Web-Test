@@ -31,7 +31,7 @@ import com.intradev.cerberus.web.client.Screen;
 
 /**
  * The welcome screen, containing a simple message indicating that the user needs to sign in
- * to see her notes.
+ * to see thei passwords.
  */
 public class WelcomeScreen extends Screen {
 

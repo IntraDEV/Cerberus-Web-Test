@@ -44,7 +44,7 @@ import com.intradev.cerberus.web.jsonrpc.gwt.JsonRpcGwtClient;
 
 
 /**
- * The JumpNote web client entry point.
+ * The Cerberus web client entry point.
  */
 public class CerberusWeb implements EntryPoint {
 	public static final int TRANSIENT_MESSAGE_HIDE_DELAY = 5000;
@@ -56,7 +56,7 @@ public class CerberusWeb implements EntryPoint {
 
     private String sLoginUrl = "";
     public static final JsonRpcGwtClient sJsonRpcClient = new JsonRpcGwtClient("/cerberusrpc");
-    public static Map<String, EncodedPassword> sNotes = new HashMap<String, EncodedPassword>();
+    public static Map<String, EncodedPassword> sPasswords = new HashMap<String, EncodedPassword>();
     public static ModelJso.UserInfo sUserInfo = null;
 
     /*
@@ -66,7 +66,7 @@ public class CerberusWeb implements EntryPoint {
     public final static int STATE_REQUESTING_USERINFO = 1;
 //        STATE_NEED_LOGIN = 2;
     public final static int STATE_REQUESTING_LOGIN = 3;
-    public final static int STATE_FETCHING_NOTES = 4;
+    public final static int STATE_FETCHING_PASSWORDS = 4;
     public final static int STATE_REQUESTING_KEYCODE = 5;
     public final static int STATE_APPLICATION_RUNNING = 6;
     
@@ -125,14 +125,14 @@ public class CerberusWeb implements EntryPoint {
 
 		@Override
 		public void onSuccess(Object data) {
-            // Process notesList RPC call results
-            JSONObject notesListJson = (JSONObject) data;
-            if (notesListJson != null) {
-                JSONArray notesJson = notesListJson.get(CerberusProtocol.NotesList.RET_PASSWORDS).isArray();
-                for (int i = 0; i < notesJson.size(); i++) {
-                    ModelJso.Note note = (ModelJso.Note) notesJson.get(i).isObject()
+            // Process passwordsList RPC call results
+            JSONObject passwordsListJson = (JSONObject) data;
+            if (passwordsListJson != null) {
+                JSONArray passwordsJson = passwordsListJson.get(CerberusProtocol.PasswordsList.RET_PASSWORDS).isArray();
+                for (int i = 0; i < passwordsJson.size(); i++) {
+                    ModelJso.Password password = (ModelJso.Password) passwordsJson.get(i).isObject()
                             .getJavaScriptObject();
-                    sNotes.put(note.getId(), new EncodedPassword(note));
+                    sPasswords.put(password.getId(), new EncodedPassword(password));
                 }
             }
                       
@@ -167,7 +167,7 @@ public class CerberusWeb implements EntryPoint {
     	case STATE_REQUESTING_USERINFO:
     		RootPanel.get("screenPanel").add(new WelcomeScreen(sLoginUrl));
     		break;
-    	case STATE_FETCHING_NOTES:
+    	case STATE_FETCHING_PASSWORDS:
 //    		mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
 //    		mScreenContainer.setDefault("settings");
 //    		mScreenContainer.install(RootPanel.get("screenPanel"));    		
@@ -200,7 +200,7 @@ public class CerberusWeb implements EntryPoint {
     			currentApplicationState = STATE_REQUESTING_LOGIN;
     		} else {
     			//assert(sLoginUrl == null);
-    			currentApplicationState = STATE_FETCHING_NOTES;
+    			currentApplicationState = STATE_FETCHING_PASSWORDS;
     			loadData(new PostDataLoadedCallback());
     		}
     		break;
@@ -209,12 +209,12 @@ public class CerberusWeb implements EntryPoint {
     	case STATE_REQUESTING_LOGIN:
     		//Do nothing, we don't allow the user to go any further
     		break;
-    	case STATE_FETCHING_NOTES:    		
+    	case STATE_FETCHING_PASSWORDS:    		
     		performPostFetchProcessing();
     		currentApplicationState = STATE_REQUESTING_KEYCODE;
     		break;
     	case STATE_REQUESTING_KEYCODE:
-    		//TODO: need some logic to inform the user to create a keypass if there are no notes
+    		//TODO: need some logic to inform the user to create a keypass if there are no passwords
     		performPostFetchProcessing();
     		currentApplicationState = STATE_APPLICATION_RUNNING;
     		break;
@@ -235,7 +235,7 @@ public class CerberusWeb implements EntryPoint {
     }
     
     public void loadData(final JsonRpcClient.Callback callback) {
-        sJsonRpcClient.call(CerberusProtocol.NotesList.METHOD, null, callback);
+        sJsonRpcClient.call(CerberusProtocol.PasswordsList.METHOD, null, callback);
     }
 
     public static void showMessage(String message, boolean isTransient) {

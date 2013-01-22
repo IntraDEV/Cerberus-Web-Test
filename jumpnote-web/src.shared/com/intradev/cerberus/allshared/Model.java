@@ -19,7 +19,7 @@ package com.intradev.cerberus.allshared;
 import java.util.Date;
 
 /**
- * Data model interface definitions for JumpNote; these should be implemented in
+ * Data model interface definitions for Cerberus; these should be implemented in
  * relevant server and client code.
  */
 public interface Model {
@@ -32,7 +32,7 @@ public interface Model {
         public boolean isPendingDelete();
     }
 
-    public static interface Note extends Syncable {
+    public static interface Password extends Syncable {
         public String getId();
         public String getOwnerId();
         public String getTitle();

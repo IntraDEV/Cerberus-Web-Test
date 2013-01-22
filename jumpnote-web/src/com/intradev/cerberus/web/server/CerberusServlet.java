@@ -44,11 +44,11 @@ import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.javashared.Util;
 import com.intradev.cerberus.web.jsonrpc.server.JsonRpcServlet;
 import com.intradev.cerberus.web.server.ModelImpl.DeviceRegistration;
-import com.intradev.cerberus.web.server.ModelImpl.Note;
+import com.intradev.cerberus.web.server.ModelImpl.Password;
 import com.intradev.cerberus.web.server.ModelImpl.UserInfo;
 
 /**
- * The server side implementation of the JumpNote JSON-RPC service.
+ * The server side implementation of the Cerberus JSON-RPC service.
  */
 @SuppressWarnings("serial")
 public class CerberusServlet extends JsonRpcServlet {
@@ -95,25 +95,25 @@ public class CerberusServlet extends JsonRpcServlet {
         return responseJson;
     }
 
-    @JsonRpcMethod(method = CerberusProtocol.NotesList.METHOD, requires_login = true)
-    public JSONObject notesList(final CallContext context) throws JSONException, JsonRpcException {
+    @JsonRpcMethod(method = CerberusProtocol.PasswordsList.METHOD, requires_login = true)
+    public JSONObject passwordList(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
-        // Note: this would be inefficient for large note collections
-        Query query = context.getPersistenceManager().newQuery(Note.class);
+        // Password: this would be inefficient for large password collections
+        Query query = context.getPersistenceManager().newQuery(Password.class);
         query.setFilter("ownerKey == ownerKeyParam && pendingDelete == false");
         query.declareParameters(Key.class.getName() + " ownerKeyParam");
         @SuppressWarnings("unchecked")
-        List<Note> notes = (List<Note>) query.execute(userInfo.getKey());
+        List<Password> passwords = (List<Password>) query.execute(userInfo.getKey());
 
         JSONObject responseJson = new JSONObject();
         try {
-            JSONArray notesJson = new JSONArray();
-            for (Note note : notes) {
-                notesJson.put(note.toJSON());
+            JSONArray passwordsJson = new JSONArray();
+            for (Password password : passwords) {
+                passwordsJson.put(password.toJSON());
             }
 
-            responseJson.put(CerberusProtocol.NotesList.RET_PASSWORDS, notesJson);
+            responseJson.put(CerberusProtocol.PasswordsList.RET_PASSWORDS, passwordsJson);
         } catch (JSONException e) {
             throw new JsonRpcException(500, "Error serializing response.", e);
         }
@@ -121,40 +121,40 @@ public class CerberusServlet extends JsonRpcServlet {
         return responseJson;
     }
 
-    @JsonRpcMethod(method = CerberusProtocol.NotesGet.METHOD, requires_login = true)
-    public JSONObject notesGet(final CallContext context) throws JSONException, JsonRpcException {
+    @JsonRpcMethod(method = CerberusProtocol.PasswordsGet.METHOD, requires_login = true)
+    public JSONObject passwordsGet(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
-        String noteId = context.getParams().getString(CerberusProtocol.NotesGet.ARG_ID);
-        Key noteKey = Note.makeKey(userInfo.getId(), noteId);
+        String passwordId = context.getParams().getString(CerberusProtocol.PasswordsGet.ARG_ID);
+        Key passwordKey = Password.makeKey(userInfo.getId(), passwordId);
         try {
-            Note note = context.getPersistenceManager().getObjectById(Note.class, noteKey);
-            if (note.isPendingDelete()) {
+            Password password = context.getPersistenceManager().getObjectById(Password.class, passwordKey);
+            if (password.isPendingDelete()) {
                 throw new JDOObjectNotFoundException();
             }
-            if (!note.getOwnerId().equals(userInfo.getId())) {
+            if (!password.getOwnerId().equals(userInfo.getId())) {
                 throw new JsonRpcException(403, "You do not have permission to access this password.");
             }
-            return (JSONObject) note.toJSON();
+            return (JSONObject) password.toJSON();
         } catch (JDOObjectNotFoundException e) {
-            throw new JsonRpcException(404, "Password with ID " + noteId + " does not exist.");
+            throw new JsonRpcException(404, "Password with ID " + passwordId + " does not exist.");
         }
     }
     
-    @JsonRpcMethod(method = CerberusProtocol.NotesCount.METHOD, requires_login = true)
-    public JSONObject notesCount(final CallContext context) throws JSONException, JsonRpcException {
+    @JsonRpcMethod(method = CerberusProtocol.PasswordsCount.METHOD, requires_login = true)
+    public JSONObject passwordsCount(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
-        // Note: this would be inefficient for large note collections
-        Query query = context.getPersistenceManager().newQuery(Note.class);
+        // Password: this would be inefficient for large password collections
+        Query query = context.getPersistenceManager().newQuery(Password.class);
         query.setFilter("ownerKey == ownerKeyParam && pendingDelete == false");
         query.declareParameters(Key.class.getName() + " ownerKeyParam");
         @SuppressWarnings("unchecked")
-        List<Note> notes = (List<Note>) query.execute(userInfo.getKey());
+        List<Password> passwords = (List<Password>) query.execute(userInfo.getKey());
 
         JSONObject responseJson = new JSONObject();
         try {
-            responseJson.put(CerberusProtocol.NotesCount.RET_COUNT, Integer.toString(notes.size()));
+            responseJson.put(CerberusProtocol.PasswordsCount.RET_COUNT, Integer.toString(passwords.size()));
         } catch (JSONException e) {
             throw new JsonRpcException(500, "Error serializing response.", e);
         }
@@ -162,29 +162,29 @@ public class CerberusServlet extends JsonRpcServlet {
         return responseJson;
     }
 
-    @JsonRpcMethod(method = CerberusProtocol.NotesCreate.METHOD, requires_login = true)
-    public JSONObject notesCreate(final CallContext context) throws JSONException, JsonRpcException {
+    @JsonRpcMethod(method = CerberusProtocol.PasswordsCreate.METHOD, requires_login = true)
+    public JSONObject passwordsCreate(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
         String clientDeviceId = null;
-        JSONObject noteJson;
-        Note note;
+        JSONObject passwordJson;
+        Password password;
         try {
             clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
-            noteJson = context.getParams().getJSONObject(CerberusProtocol.NotesCreate.ARG_NOTE);
-            noteJson.put("owner_id", userInfo.getId());
-            note = new Note(noteJson);
+            passwordJson = context.getParams().getJSONObject(CerberusProtocol.PasswordsCreate.ARG_PASSWORD);
+            passwordJson.put("owner_id", userInfo.getId());
+            password = new Password(passwordJson);
         } catch (JSONException e) {
             throw new JsonRpcException(400, "Invalid password parameter.", e);
         }
 
-        context.getPersistenceManager().makePersistent(note);
-        noteJson = (JSONObject) note.toJSON(); // get new parameters like ID, creation date, etc.
+        context.getPersistenceManager().makePersistent(password);
+        passwordJson = (JSONObject) password.toJSON(); // get new parameters like ID, creation date, etc.
 
         enqueueDeviceMessage(context.getPersistenceManager(), userInfo, clientDeviceId);
         
         JSONObject responseJson = new JSONObject();
-        responseJson.put(CerberusProtocol.NotesCreate.RET_NOTE, noteJson);
+        responseJson.put(CerberusProtocol.PasswordsCreate.RET_PASSWORD, passwordJson);
         return responseJson;
     }
     
@@ -229,33 +229,33 @@ public class CerberusServlet extends JsonRpcServlet {
                 userInfo.getEmail() + ".");
     }
 
-    @JsonRpcMethod(method = CerberusProtocol.NotesEdit.METHOD, requires_login = true)
-    public JSONObject notesEdit(final CallContext context) throws JSONException, JsonRpcException {
+    @JsonRpcMethod(method = CerberusProtocol.PasswordssEdit.METHOD, requires_login = true)
+    public JSONObject passwordsEdit(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
         String clientDeviceId;
-        JSONObject noteJson;
-        Note note;
-        String noteId = "n/a";
+        JSONObject passwordJson;
+        Password password;
+        String passwordId = "n/a";
         Transaction tx = context.getPersistenceManager().currentTransaction();
         try {
             clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
-            noteJson = context.getParams().getJSONObject(CerberusProtocol.NotesEdit.ARG_PASSWORD);
-            noteId = noteJson.getString("id");
-            Key noteKey = Note.makeKey(userInfo.getId(), noteId);
+            passwordJson = context.getParams().getJSONObject(CerberusProtocol.PasswordssEdit.ARG_PASSWORD);
+            passwordId = passwordJson.getString("id");
+            Key passwordKey = Password.makeKey(userInfo.getId(), passwordId);
 
             tx.begin();
-            note = context.getPersistenceManager().getObjectById(Note.class, noteKey);
-            if (!note.getOwnerId().equals(userInfo.getId())) {
-                throw new JsonRpcException(403, "You do not have permission to modify this note.");
+            password = context.getPersistenceManager().getObjectById(Password.class, passwordKey);
+            if (!password.getOwnerId().equals(userInfo.getId())) {
+                throw new JsonRpcException(403, "You do not have permission to modify this password.");
             }
-            noteJson.put("owner_id", userInfo.getId());
-            note.fromJSON(noteJson);
+            passwordJson.put("owner_id", userInfo.getId());
+            password.fromJSON(passwordJson);
             tx.commit();
         } catch (JSONException e) {
-            throw new JsonRpcException(400, "Invalid note parameter.", e);
+            throw new JsonRpcException(400, "Invalid password parameter.", e);
         } catch (JDOObjectNotFoundException e) {
-            throw new JsonRpcException(404, "Note with ID " + noteId + " does not exist.");
+            throw new JsonRpcException(404, "Password with ID " + passwordId + " does not exist.");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -264,42 +264,42 @@ public class CerberusServlet extends JsonRpcServlet {
 
         enqueueDeviceMessage(context.getPersistenceManager(), userInfo, clientDeviceId);
 
-        noteJson = (JSONObject) note.toJSON(); // get more parameters like ID, creation date, etc.
+        passwordJson = (JSONObject) password.toJSON(); // get more parameters like ID, creation date, etc.
         JSONObject responseJson = new JSONObject();
-        responseJson.put(CerberusProtocol.NotesEdit.RET_PASSWORD, noteJson);
+        responseJson.put(CerberusProtocol.PasswordssEdit.RET_PASSWORD, passwordJson);
         return responseJson;
     }
 
-    @JsonRpcMethod(method = CerberusProtocol.NotesDelete.METHOD, requires_login = true)
-    public JSONObject notesDelete(final CallContext context) throws JSONException, JsonRpcException {
+    @JsonRpcMethod(method = CerberusProtocol.PasswordsDelete.METHOD, requires_login = true)
+    public JSONObject passwordsDelete(final CallContext context) throws JSONException, JsonRpcException {
         UserInfo userInfo = getCurrentUserInfo(context);
 
         String clientDeviceId = null;
-        Note note;
-        String noteId;
+        Password password;
+        String passwordId;
         try {
             clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
-            noteId = context.getParams().getString(CerberusProtocol.NotesDelete.ARG_ID);
+            passwordId = context.getParams().getString(CerberusProtocol.PasswordsDelete.ARG_ID);
         } catch (JSONException e) {
-            throw new JsonRpcException(400, "Invalid note ID.", e);
+            throw new JsonRpcException(400, "Invalid password ID.", e);
         }
 
         Transaction tx = context.getPersistenceManager().currentTransaction();
         try {
             tx.begin();
-            note = context.getPersistenceManager().getObjectById(Note.class,
-                    Note.makeKey(userInfo.getId(), noteId));
-            if (note.isPendingDelete()) {
+            password = context.getPersistenceManager().getObjectById(Password.class,
+                    Password.makeKey(userInfo.getId(), passwordId));
+            if (password.isPendingDelete()) {
                 throw new JDOObjectNotFoundException();
             }
-            if (!note.getOwnerId().equals(userInfo.getId())) {
-                throw new JsonRpcException(403, "You do not have permission to modify this note.");
+            if (!password.getOwnerId().equals(userInfo.getId())) {
+                throw new JsonRpcException(403, "You do not have permission to modify this password.");
             }
 
-            note.markForDeletion();
+            password.markForDeletion();
             tx.commit();
         } catch (JDOObjectNotFoundException e) {
-            throw new JsonRpcException(404, "Note with ID " + noteId + " does not exist.");
+            throw new JsonRpcException(404, "Password with ID " + passwordId + " does not exist.");
         } finally {
             if (tx.isActive()) {
                 tx.rollback();
@@ -310,17 +310,17 @@ public class CerberusServlet extends JsonRpcServlet {
         return null;
     }
 
-    @JsonRpcMethod(method = CerberusProtocol.NotesSync.METHOD, requires_login = true)
-    public JSONObject notesSync(final CallContext context) throws JSONException, JsonRpcException {
-        // This method should return a list of updated notes since a current
-        // date, optionally reconciling/merging a set of a local notes.
+    @JsonRpcMethod(method = CerberusProtocol.PasswordsSync.METHOD, requires_login = true)
+    public JSONObject passwordsSync(final CallContext context) throws JSONException, JsonRpcException {
+        // This method should return a list of updated passwords since a current
+        // date, optionally reconciling/merging a set of a local passwords.
         String clientDeviceId = null;
         UserInfo userInfo = getCurrentUserInfo(context);
         Date sinceDate;
 
         try {
             clientDeviceId = context.getParams().optString(CerberusProtocol.ARG_CLIENT_DEVICE_ID);
-            sinceDate = Util.parseDateISO8601(context.getParams().getString(CerberusProtocol.NotesSync.ARG_SINCE_DATE));
+            sinceDate = Util.parseDateISO8601(context.getParams().getString(CerberusProtocol.PasswordsSync.ARG_SINCE_DATE));
         } catch (ParseException e) {
             throw new JsonRpcException(400, "Invalid since_date.", e);
         } catch (JSONException e) {
@@ -328,78 +328,78 @@ public class CerberusServlet extends JsonRpcServlet {
         }
 
         JSONObject responseJson = new JSONObject();
-        JSONArray notesJson = new JSONArray();
+        JSONArray passwordsJson = new JSONArray();
         Transaction tx = context.getPersistenceManager().currentTransaction();
         Date newSinceDate = new Date();
         try {
             tx.begin();
-            List<Note> localNotes = new ArrayList<Note>();
-            if (context.getParams().has(CerberusProtocol.NotesSync.ARG_LOCAL_PASSWORDS)) {
-                JSONArray localChangesJson = context.getParams().getJSONArray(CerberusProtocol.NotesSync.ARG_LOCAL_PASSWORDS);
+            List<Password> localPasswords = new ArrayList<Password>();
+            if (context.getParams().has(CerberusProtocol.PasswordsSync.ARG_LOCAL_PASSWORDS)) {
+                JSONArray localChangesJson = context.getParams().getJSONArray(CerberusProtocol.PasswordsSync.ARG_LOCAL_PASSWORDS);
                 for (int i = 0; i < localChangesJson.length(); i++) {
                     try {
-                        JSONObject noteJson = localChangesJson.getJSONObject(i);
+                        JSONObject passwordJson = localChangesJson.getJSONObject(i);
 
-                        if (noteJson.has("id")) {
-                            Key existingNoteKey = Note.makeKey(userInfo.getId(),
-                                    noteJson.get("id").toString());
+                        if (passwordJson.has("id")) {
+                            Key existingPasswordKey = Password.makeKey(userInfo.getId(),
+                            		passwordJson.get("id").toString());
                             try {
-                                Note existingNote = (Note) context.getPersistenceManager().getObjectById(
-                                        Note.class, existingNoteKey);
-                                if (!existingNote.getOwnerId().equals(userInfo.getId())) {
-                                    // User doesn't have permission to edit this note. Instead of
+                                Password existingPassword = (Password) context.getPersistenceManager().getObjectById(
+                                        Password.class, existingPasswordKey);
+                                if (!existingPassword.getOwnerId().equals(userInfo.getId())) {
+                                    // User doesn't have permission to edit this password. Instead of
                                     // throwing an error, just re-create it on the server side.
                                     //throw new JsonRpcException(403,
-                                    //        "You do not have permission to modify this note.");
-                                    noteJson.remove("id");
+                                    //        "You do not have permission to modify this password.");
+                                	passwordJson.remove("id");
                                 }
                             } catch (JDOObjectNotFoundException e) {
-                                // Note doesn't exist, instead of throwing an error,
-                                // just re-create the note on the server side (unassign its ID).
-                                //throw new JsonRpcException(404, "Note with ID "
-                                //        + noteJson.get("id").toString() + " does not exist.");
-                                noteJson.remove("id");
+                                // Password doesn't exist, instead of throwing an error,
+                                // just re-create the password on the server side (unassign its ID).
+                                //throw new JsonRpcException(404, "Password with ID "
+                                //        + passwordJson.get("id").toString() + " does not exist.");
+                            	passwordJson.remove("id");
                             }
                         }
 
-                        noteJson.put("owner_id", userInfo.getId());
-                        Note localNote = new Note(noteJson);
-                        localNotes.add(localNote);
+                        passwordJson.put("owner_id", userInfo.getId());
+                        Password localPassword = new Password(passwordJson);
+                        localPasswords.add(localPassword);
                     } catch (JSONException e) {
-                        throw new JsonRpcException(400, "Invalid local note content.", e);
+                        throw new JsonRpcException(400, "Invalid local password content.", e);
                     }
                 }
             }
 
-            // Query server-side note changes.
-            Query query = context.getPersistenceManager().newQuery(Note.class);
+            // Query server-side password changes.
+            Query query = context.getPersistenceManager().newQuery(Password.class);
             query.setFilter("ownerKey == ownerKeyParam && modifiedDate > sinceDate");
             query.setOrdering("modifiedDate desc");
             query.declareParameters(Key.class.getName() + " ownerKeyParam, java.util.Date sinceDate");
             @SuppressWarnings("unchecked")
-            List<Note> notes = (List<Note>) query.execute(userInfo.getKey(), sinceDate);
+            List<Password> passwords = (List<Password>) query.execute(userInfo.getKey(), sinceDate);
 
             // Now merge the lists and conflicting objects.
-            Reconciler<Note> reconciler = new Reconciler<Note>() {
+            Reconciler<Password> reconciler = new Reconciler<Password>() {
                 @Override
-                public Note reconcile(Note o1, Note o2) {
+                public Password reconcile(Password o1, Password o2) {
                     boolean pick1 = o1.getModifiedDate().after(o2.getModifiedDate());
 
-                    // Make sure only the chosen version of the note is persisted
+                    // Make sure only the chosen version of the password is persisted
                     context.getPersistenceManager().makeTransient(pick1 ? o2 : o1);
 
                     return pick1 ? o1 : o2;
                 }
             };
 
-            Collection<Note> reconciledNotes = reconciler.reconcileLists(notes, localNotes);
+            Collection<Password> reconciledPasswords = reconciler.reconcileLists(passwords, localPasswords);
 
-            for (Note note : reconciledNotes) {
-                // Save the note.
-                context.getPersistenceManager().makePersistent(note);
+            for (Password password : reconciledPasswords) {
+                // Save the password.
+                context.getPersistenceManager().makePersistent(password);
 
                 // Put it in the response output.
-                notesJson.put(note.toJSON());
+                passwordsJson.put(password.toJSON());
             }
             tx.commit();
         } finally {
@@ -410,8 +410,8 @@ public class CerberusServlet extends JsonRpcServlet {
 
         enqueueDeviceMessage(context.getPersistenceManager(), userInfo, clientDeviceId);
 
-        responseJson.put(CerberusProtocol.NotesSync.RET_PASSWORDS, notesJson);
-        responseJson.put(CerberusProtocol.NotesSync.RET_NEW_SINCE_DATE,
+        responseJson.put(CerberusProtocol.PasswordsSync.RET_PASSWORDS, passwordsJson);
+        responseJson.put(CerberusProtocol.PasswordsSync.RET_NEW_SINCE_DATE,
                 Util.formatDateISO8601(newSinceDate));
         return responseJson;
     }

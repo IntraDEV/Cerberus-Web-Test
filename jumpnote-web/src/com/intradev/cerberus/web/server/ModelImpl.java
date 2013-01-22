@@ -41,20 +41,20 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 /**
- * Data model implementation for the JumpNote App Engine server. ModelImpl serves more as a
+ * Data model implementation for the Cerberus App Engine server. ModelImpl serves more as a
  * namespace than a class, for convenience. The base interfaces are defined in
  * the {@link Model} class.
  */
 public class ModelImpl {
     @PersistenceCapable
-    public static final class Note implements Model.Note, JsonSerializable {
+    public static final class Password implements Model.Password, JsonSerializable {
         @PrimaryKey
         @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
         private Key key;
 
         @Persistent
         @Extension(vendorName = "datanucleus", key = "gae.parent-pk", value = "true")
-        private Key ownerKey; // only set this when creating a note
+        private Key ownerKey; // only set this when creating a password
 
         @Persistent
         private String title;
@@ -79,14 +79,14 @@ public class ModelImpl {
         @NotPersistent
         private String localId;
 
-        public Note(String ownerId) {
+        public Password(String ownerId) {
             this.ownerKey = UserInfo.makeKey(ownerId);
             this.createdDate = new Date();
             this.modifiedDate = new Date();
             touch();
         }
 
-        public Note(JSONObject json) throws JSONException {
+        public Password(JSONObject json) throws JSONException {
             this.createdDate = new Date();
             this.modifiedDate = new Date();
             this.fromJSON(json);
@@ -95,7 +95,7 @@ public class ModelImpl {
         public void fromJSON(Object object) throws JSONException {
             JSONObject json = (JSONObject) object;
             if (json.has("id"))
-                this.key = Note.makeKey(json.getString("owner_id"), json.getString("id"));
+                this.key = Password.makeKey(json.getString("owner_id"), json.getString("id"));
             else
                 this.ownerKey = UserInfo.makeKey(json.getString("owner_id"));
             this.localId = json.optString("local_id", this.localId);
@@ -133,11 +133,11 @@ public class ModelImpl {
 
         @Override
         public boolean equals(Object obj) {
-            if (getKey() == null || ((Note) obj).getKey() == null)
+            if (getKey() == null || ((Password) obj).getKey() == null)
                 return false;
 
-            if (obj instanceof Note)
-                return ((Note) obj).getKey().equals(getKey());
+            if (obj instanceof Password)
+                return ((Password) obj).getKey().equals(getKey());
             return false;
         }
 
@@ -156,7 +156,7 @@ public class ModelImpl {
 
         public static Key makeKey(String ownerId, String id) {
             return KeyFactory.createKey(UserInfo.makeKey(ownerId),
-                    "ModelImpl$Note", Long.parseLong(id));
+                    "ModelImpl$Password", Long.parseLong(id));
         }
 
         public String getId() {

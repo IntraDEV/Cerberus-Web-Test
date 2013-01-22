@@ -26,7 +26,7 @@ import com.intradev.cerberus.web.client.code.PasswordDecoderFactory;
 
 /**
  * The welcome screen, containing a simple message indicating that the user needs to sign in
- * to see her notes.
+ * to see their password.
  */
 public class KeypassRequestScreen extends Screen {
 
@@ -62,7 +62,7 @@ public class KeypassRequestScreen extends Screen {
         /*this.masterInstance = instance;*/
     	this.callback = callback;
     	
-        if (CerberusWeb.sNotes.size() == 0) {
+        if (CerberusWeb.sPasswords.size() == 0) {
         	popup.setTitle("Enter the keycode you will use to unlock your password store");
         } else {
         	popup.setTitle("Enter the keycode to unlock your password store");     	
@@ -130,17 +130,17 @@ public class KeypassRequestScreen extends Screen {
 		if (passcode.length() < CerberusWeb.MIN_PASSCODE_LENGTH) {
 			CerberusWeb.showMessage("Cannot have an empty or short passcode",true);
 		} else {
-			if (CerberusWeb.sNotes.size() == 0) {
-				PasswordDecoderFactory.installNoteDecoder(passcode);
+			if (CerberusWeb.sPasswords.size() == 0) {
+				PasswordDecoderFactory.installPasswordDecoder(passcode);
 				shutdownPopup();
 			} else {
-				PasswordDecoderFactory.installNoteDecoder(passcode);
-				EncodedPassword first=CerberusWeb.sNotes.entrySet().iterator().next().getValue();
+				PasswordDecoderFactory.installPasswordDecoder(passcode);
+				EncodedPassword first=CerberusWeb.sPasswords.entrySet().iterator().next().getValue();
 				if (first.isDecodable()) {
 					shutdownPopup();
 				} else {
 					//Stay in this state
-					CerberusWeb.showMessage("The passcode does not allow you to decode your notes",true);
+					CerberusWeb.showMessage("The passcode does not allow you to decode your passwords",true);
 					ptb.setText("");						
 				}
 			}	

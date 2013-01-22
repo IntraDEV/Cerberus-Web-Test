@@ -35,40 +35,40 @@ public final class CerberusProtocol {
         public static final String RET_LOGOUT_URL = "logout_url";
     }
 
-    public static final class NotesList {
+    public static final class PasswordsList {
         public static final String METHOD = "passwords.list";
         public static final String RET_PASSWORDS = "passwords";
     }
 
-    public static final class NotesGet {
+    public static final class PasswordsGet {
         public static final String METHOD = "passwords.get";
         public static final String ARG_ID = "id";
-        public static final String RET_PASSWORDS = "note";
+        public static final String RET_PASSWORDS = "password";
     }
     
-    public static final class NotesCount {
+    public static final class PasswordsCount {
         public static final String METHOD = "passwords.count";
         public static final String RET_COUNT = "count";
     }
 
-    public static final class NotesCreate {
+    public static final class PasswordsCreate {
         public static final String METHOD = "passwords.create";
-        public static final String ARG_NOTE = "password";
-        public static final String RET_NOTE = "password";
+        public static final String ARG_PASSWORD = "password";
+        public static final String RET_PASSWORD = "password";
     }
 
-    public static final class NotesEdit {
+    public static final class PasswordssEdit {
         public static final String METHOD = "passwords.edit";
         public static final String ARG_PASSWORD = "password";
         public static final String RET_PASSWORD = "password";
     }
 
-    public static final class NotesDelete {
+    public static final class PasswordsDelete {
         public static final String METHOD = "password.delete";
         public static final String ARG_ID = "id";
     }
 
-    public static final class NotesSync {
+    public static final class PasswordsSync {
         public static final String METHOD = "passwords.sync";
         public static final String ARG_SINCE_DATE = "since_date";
         public static final String ARG_LOCAL_PASSWORDS = "local_passwords";

@@ -34,13 +34,13 @@ import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.web.client.code.EncodedPassword;
 
 /**
- * A list item widget, representing a note.
+ * A list item widget, representing a password.
  */
 public class PasswordItem extends Composite {
 
-    private static NoteItemUiBinder uiBinder = GWT.create(NoteItemUiBinder.class);
+    private static PasswordItemUiBinder uiBinder = GWT.create(PasswordItemUiBinder.class);
 
-    interface NoteItemUiBinder extends UiBinder<Widget, PasswordItem> {
+    interface PasswordItemUiBinder extends UiBinder<Widget, PasswordItem> {
     }
 
     @UiField
@@ -55,16 +55,16 @@ public class PasswordItem extends Composite {
     @UiField
     PushButton deleteButton;
 
-    EncodedPassword mNote;
+    EncodedPassword mPassword;
 
     ActionCallback mActionCallback;
 
-    public PasswordItem(EncodedPassword note, ActionCallback actionCallback) {
+    public PasswordItem(EncodedPassword oassword, ActionCallback actionCallback) {
         initWidget(uiBinder.createAndBindUi(this));
 
-        this.mNote = note;
-        titleLabel.setText(note.getTitle());
-        snippetLabel.setText(note.getBody());
+        this.mPassword = oassword;
+        titleLabel.setText(oassword.getTitle());
+        snippetLabel.setText(oassword.getBody());
 
         mActionCallback = actionCallback;
 
@@ -74,7 +74,7 @@ public class PasswordItem extends Composite {
     @Override
     public void onBrowserEvent(Event event) {
         if (event.getTypeInt() == Event.ONCLICK) {
-            mActionCallback.onEdit(mNote.getId());
+            mActionCallback.onEdit(mPassword.getId());
             event.stopPropagation();
             event.preventDefault();
             return;
@@ -85,19 +85,19 @@ public class PasswordItem extends Composite {
     @UiHandler("editButton")
     void onEditClick(ClickEvent e) {
         e.stopPropagation();
-        mActionCallback.onEdit(mNote.getId());
+        mActionCallback.onEdit(mPassword.getId());
     }
 
     @UiHandler("deleteButton")
     void onDeleteClick(ClickEvent e) {
         e.stopPropagation();
-        if (Window.confirm("Are you sure you want to delete '" + mNote.getTitle() + "'?")) {
-            mActionCallback.onDelete(mNote.getId());
+        if (Window.confirm("Are you sure you want to delete '" + mPassword.getTitle() + "'?")) {
+            mActionCallback.onDelete(mPassword.getId());
         }
     }
 
     public interface ActionCallback {
-        public void onEdit(String noteId);
-        public void onDelete(String noteId);
+        public void onEdit(String passwordId);
+        public void onDelete(String passwordId);
     }
 }
