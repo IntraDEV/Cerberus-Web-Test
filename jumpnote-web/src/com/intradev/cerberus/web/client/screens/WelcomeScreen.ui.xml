@@ -20,7 +20,15 @@
     <g:HTMLPanel>
         <p class="big-text">
             Welcome to Cerberus!<br/>
-            <g:Anchor ui:field="signInLink">Sign in</g:Anchor> with your Google Account to continue.
+        </p>
+        <p class="small-text">
+            Cerberus is a handy and lightweight tool to save private notes that are accessible across all your devices.
+        </p>
+        <p class="big-text">
+            <g:Anchor ui:field="signInLink">Sign in</g:Anchor><sup>*</sup> with your Google Account to continue.
+        </p>
+		<p class="small-text">
+            * Cerberus uses google authentication to simplify synchronising with your android devices. Cerberus does not collect or save your google credentials.
         </p>
     </g:HTMLPanel>
 </ui:UiBinder>

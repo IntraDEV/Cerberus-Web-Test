@@ -85,6 +85,16 @@ h2, .big-text
     font-weight : bold;
 }
 
+.small-text
+{
+    /* margin : 36px 0 12px 0; */
+    font-size : 18px;
+    /* line-height : 42px;
+    letter-spacing : -2px;
+    font-weight : bold; */
+    color : rgb(181 , 90 , 31);
+}
+
 
 /* passwords list */
 .passwordList
