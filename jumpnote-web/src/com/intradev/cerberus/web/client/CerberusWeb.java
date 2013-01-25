@@ -36,6 +36,7 @@ import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
 import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.web.client.code.EncodedPassword;
+import com.intradev.cerberus.web.client.controls.Popover;
 import com.intradev.cerberus.web.client.screens.KeypassRequestScreen;
 import com.intradev.cerberus.web.client.screens.PasswordEditor;
 import com.intradev.cerberus.web.client.screens.PasswordList;
@@ -179,6 +180,15 @@ public class CerberusWeb implements EntryPoint {
     		//mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
     		mScreenContainer.setDefault("home");
     		mScreenContainer.install(RootPanel.get("screenPanel"));
+    		
+    		
+    		{
+    			final RootPanel loginPanel = RootPanel.get("loginPanel");
+
+    			Popover.createPopover(null,loginPanel,"title", "body");
+    			
+    		}
+    	        
     		break;
     	}
 

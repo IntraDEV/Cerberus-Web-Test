@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<ui:UiBinder
+    xmlns:ui="urn:ui:com.google.gwt.uibinder"
+    xmlns:g="urn:import:com.google.gwt.user.client.ui">
+    <ui:with type="com.intradev.cerberus.web.client.resources.Resources" field="res" />
+    
+    <g:HTMLPanel>
+	    <div ui:field="popopone" class="popover fade top in">
+	        <div ui:field="arrow" class="arrow"></div>
+	        <div class="popover-inner">
+		        <h3 class="popover-title">
+		            <span ui:field="popoverTitle"/>	        	
+		        </h3>
+		        <div class="popover-content">
+		            <span ui:field="popoverContent"/>
+		         <p style="text-align: center;">
+		             <!-- <a href="javascript:hide('popup')" id="close" class="pull-right" ui:field="close">x</a>  -->
+		                <g:PushButton ui:field="deleteButton">
+			                <g:upFace image="{res.btn_delete}"/>
+			                <g:upHoveringFace image="{res.btn_delete_on}"/>
+			                <g:downFace image="{res.btn_delete_on}"/>
+            			</g:PushButton>
+		             
+		         </p>
+		        </div>            
+	        </div>
+	    </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

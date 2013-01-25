@@ -48,12 +48,12 @@ body
     padding : 26px 8px 6px 8px;
     text-align : left;
     font-weight : bold;
-    background-color : rgb(181 , 90 , 31);
+    background-color : rgb(237, 165, 165); 
     color : rgb(255 , 255 , 255);
     border-radius : 4px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#c37848), to(#b55a1f));
+	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(237, 165, 165)), to(rgb(136,10,12)));
   	-webkit-box-shadow: 0px 2px 5px rgba(0,0,0,0.4);
 }
 
@@ -71,10 +71,12 @@ body
 {
     font-weight : bold;
 }
+
 /* content */
 #screenPanel a
 {
-    color : rgb(181 , 90 , 31);
+    /* color : rgb(181 , 90 , 31); */
+    color : #B01220;
 }
 h2, .big-text
 {
@@ -92,7 +94,8 @@ h2, .big-text
     /* line-height : 42px;
     letter-spacing : -2px;
     font-weight : bold; */
-    color : rgb(181 , 90 , 31);
+    /* color : rgb(181 , 90 , 31); */
+    color : #B01220;
 }
 
 
@@ -126,7 +129,8 @@ h2, .big-text
 }
 .passwordItem:hover .passwordTitle
 {
-    color : rgb(181 , 90 , 31);
+    /*color : rgb(181 , 90 , 31);*/
+    color : #5F0413;
 }
 .passwordItem .passwordSnippet
 {
@@ -165,14 +169,17 @@ h2, .big-text
 .passwordEditor .passwordTitle
 {
     margin : 36px 0 12px 0;
-    background-color : rgb(250 , 230 , 218);
+    /* background-color : rgb(250 , 230 , 218); */
+    background-color : rgb(237, 165, 166);
     font-size : 18px;
     font-weight : bold;
     line-height : 18px;
 }
 .passwordEditor .passwordTitle:focus
 {
-    border : 1px solid rgb(181 , 90 , 31);
+    /* border : 1px solid rgb(181 , 90 , 31); */
+    border : 1px solid #5F0413;
+    
 }
 .passwordEditor .passwordBody
 {
@@ -184,7 +191,8 @@ h2, .big-text
 }
 .passwordEditor .passwordBody:focus
 {
-    border : 1px solid rgb(181 , 90 , 31);
+    /* border : 1px solid rgb(181 , 90 , 31); */
+    border : 1px solid #5F0413;
 }
 
 
