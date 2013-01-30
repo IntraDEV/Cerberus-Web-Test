@@ -11,40 +11,39 @@
          
         
         <g:HTMLPanel>
-        	<div class="level0">
-
-	            <g:Image styleName="image" resource="{res.cerberus_logo_small}"/>
-	            
+            <g:Image styleName="image" resource="{res.cerberus_logo_small}"/>
+            <div class="level0">
                    	<g:Label styleName="header" ui:field="header"> 
-		        		Enter password store keycode
+		        		Export your saved passwords to a csv
 					</g:Label>
-			
-
-			</div>
-			<div class="level2">		
-                   	<g:Label styleName="body" ui:field="currentPasswordLabel" wordWrap="true"> 
-		        		Enter the keycode you will use to unlock the passwords
-              				This keycode cannot be empty.
+					
+                   	<g:Label styleName="body" ui:field="deepInstructionsLabel" wordWrap="true"> 
+		        		Click the button below to save your passwords to a local file in .csv format. Note that this will transmit your unencrypted passwords over an unsecure connection.
 					</g:Label>
-
-           </div>
-        </g:HTMLPanel>
-        <g:HTMLPanel>
-        
-        <g:PasswordTextBox ui:field="currentPassword" styleName="textEntry"/>
-        
-                                <div class="footer">  
+					
+                                                        
+                <div class="footer">  
 	                
                     	<g:PushButton ui:field="okButton" styleName="cerberus_button">
-                    	    Ok
+                    	    Export
                     	    <!-- 
 						    <g:upFace image="{res.btn_create_keycode_password_off}"/>
 						    <g:upHoveringFace image="{res.btn_create_keycode_password_on}"/>
 						    <g:downFace image="{res.btn_create_keycode_password_on}"/>
 						     -->
 						</g:PushButton>
-						         
+						
+                    	<g:PushButton ui:field="cancelButton" styleName="cerberus_button">
+                    	    Cancel
+                    	    <!-- 
+						    <g:upFace image="{res.btn_create_keycode_password_off}"/>
+						    <g:upHoveringFace image="{res.btn_create_keycode_password_on}"/>
+						    <g:downFace image="{res.btn_create_keycode_password_on}"/>
+						     -->
+						</g:PushButton>
+                	              
                 </div>
+           </div>
         </g:HTMLPanel>
         </g:VerticalPanel>
 	</g:PopupPanel>    

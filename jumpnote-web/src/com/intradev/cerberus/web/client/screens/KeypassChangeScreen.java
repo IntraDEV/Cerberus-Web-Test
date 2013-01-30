@@ -28,11 +28,11 @@ import com.intradev.cerberus.web.client.code.PasswordDecoderFactory;
  * The welcome screen, containing a simple message indicating that the user needs to sign in
  * to see their password.
  */
-public class KeypassRequestScreen extends Screen {
+public class KeypassChangeScreen extends Screen {
 
-    private static KeypassRequestScreenUiBinder uiBinder = GWT.create(KeypassRequestScreenUiBinder.class);
+    private static KeypassChangeScreenUiBinder uiBinder = GWT.create(KeypassChangeScreenUiBinder.class);
 
-    interface KeypassRequestScreenUiBinder extends UiBinder<Widget, KeypassRequestScreen> {
+    interface KeypassChangeScreenUiBinder extends UiBinder<Widget, KeypassChangeScreen> {
     }
     
     
@@ -46,20 +46,29 @@ public class KeypassRequestScreen extends Screen {
    	Label currentPasswordLabel;
     
     @UiField
+   	Label newPasswordLabel;
+    
+    @UiField
     PushButton okButton;
+    
+    @UiField
+    PushButton cancelButton;
         
     @UiField
 	PasswordTextBox currentPassword;
+    
+    @UiField
+	PasswordTextBox newPassword;
 
     
-    private final PopupCompleteCallback callback;
+    private final KeypassRequestScreen.PopupCompleteCallback callback;
     private ClickHandler listener;
     private HandlerRegistration handlerRegistration;
     /*private CerberusWeb masterInstance;*/
     
     
-    public static KeypassRequestScreen instanciateKeypassRequestScreen(CerberusWeb instance, final PopupCompleteCallback callback) {
-    	KeypassRequestScreen newInstance= new KeypassRequestScreen(instance,callback);
+    public static KeypassChangeScreen instanciateKeypassChangeScreen(CerberusWeb instance, final KeypassRequestScreen.PopupCompleteCallback callback) {
+    	KeypassChangeScreen newInstance= new KeypassChangeScreen(instance,callback);
     	
     	//First check if there are passwords already in the store
         if (CerberusWeb.sPasswords.size() == 0) {
@@ -72,7 +81,7 @@ public class KeypassRequestScreen extends Screen {
     }
     
 
-    private KeypassRequestScreen(CerberusWeb instance, final PopupCompleteCallback callback) {
+    private KeypassChangeScreen(CerberusWeb instance, final KeypassRequestScreen.PopupCompleteCallback callback) {
         initWidget(uiBinder.createAndBindUi(this));
         /*this.masterInstance = instance;*/
     	this.callback = callback;
@@ -96,6 +105,15 @@ public class KeypassRequestScreen extends Screen {
         };
                 
         okButton.addClickHandler(listener);
+        
+        cancelButton.addClickHandler(new ClickHandler() {
+
+			@Override
+			public void onClick(ClickEvent event) {
+				shutdownPopup();				
+			}
+        	
+        });
 
         popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
           public void setPosition(int offsetWidth, int offsetHeight) {
@@ -129,11 +147,7 @@ public class KeypassRequestScreen extends Screen {
 		}
       }
     
-    public interface PopupCompleteCallback {
-    	
-    	void popupComplete();
-    }
-    
+    //TODO: centralize since this is a duplicat of KeypassRequestScreen
     private void shutdownPopup() {
 		callback.popupComplete();
 		handlerRegistration.removeHandler();
@@ -142,6 +156,8 @@ public class KeypassRequestScreen extends Screen {
 		this.removeFromParent();
     }
     
+    
+    //TODO: centralize since this is a duplicat of KeypassRequestScreen
     private void handleClick() {
     	String passcode = currentPassword.getValue();
 		if (passcode.length() < CerberusWeb.MIN_PASSCODE_LENGTH) {

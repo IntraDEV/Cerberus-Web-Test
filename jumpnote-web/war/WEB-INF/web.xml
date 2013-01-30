@@ -29,6 +29,18 @@
     <servlet-name>c2dmRetryServlet</servlet-name>
     <servlet-class>com.google.android.c2dm.server.C2DMRetryServlet</servlet-class>
   </servlet>
+  
+
+  <servlet>
+    <servlet-name>csvSaverServlet</servlet-name>
+    <servlet-class>com.intradev.cerberus.web.server.CSVConverterServletImpl</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>csvExportServlet</servlet-name>
+    <servlet-class>com.intradev.cerberus.web.server.Export</servlet-class>
+  </servlet>
+
 
   <servlet-mapping>
     <servlet-name>rpcServlet</servlet-name>
@@ -38,6 +50,16 @@
   <servlet-mapping>
     <servlet-name>c2dmRetryServlet</servlet-name>
     <url-pattern>/tasks/c2dm</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>csvSaverServlet</servlet-name>
+    <url-pattern>/cerberusweb/CSVConverterService</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>csvExportServlet</servlet-name>
+    <url-pattern>/cerberusweb/Export</url-pattern>
   </servlet-mapping>
 
   <!-- Default page to serve -->

@@ -16,10 +16,11 @@
 		            <span ui:field="popoverContent"/>
 		         <p style="text-align: center;">
 		             <!-- <a href="javascript:hide('popup')" id="close" class="pull-right" ui:field="close">x</a>  -->
-		                <g:PushButton ui:field="deleteButton">
-			                <g:upFace image="{res.btn_delete}"/>
+		                <g:PushButton ui:field="deleteButton" styleName="cerberus_button">
+		                    Close
+<!-- 			                <g:upFace image="{res.btn_delete}"/>
 			                <g:upHoveringFace image="{res.btn_delete_on}"/>
-			                <g:downFace image="{res.btn_delete_on}"/>
+			                <g:downFace image="{res.btn_delete_on}"/> -->
             			</g:PushButton>
 		             
 		         </p>

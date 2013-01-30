@@ -40,6 +40,7 @@ body
     margin : 0 auto;
     text-align : center;
 }
+
 #messagePanel
 {
     display : inline-block;
@@ -48,12 +49,14 @@ body
     padding : 26px 8px 6px 8px;
     text-align : left;
     font-weight : bold;
-    background-color : rgb(237, 165, 165); 
+    background-color : rgb(237, 165, 165);  
     color : rgb(255 , 255 , 255);
+    
     border-radius : 4px;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(rgb(237, 165, 165)), to(rgb(136,10,12)));
+	
+	background-image: -webkit-gradient(linear, left top, left bottom, from( rgb(237, 165, 165) ), to( rgb(136,10,12) ));
   	-webkit-box-shadow: 0px 2px 5px rgba(0,0,0,0.4);
 }
 
@@ -97,6 +100,8 @@ h2, .big-text
     /* color : rgb(181 , 90 , 31); */
     color : #B01220;
 }
+
+
 
 
 /* passwords list */
@@ -149,6 +154,16 @@ h2, .big-text
 .passwordItem:hover .controls
 {
     visibility : visible;
+    
+}
+
+.passwordItem:hover
+{
+	border : 0px solid rgb(0 , 0 , 0);
+  	background-color : rgb(237, 165, 165);  
+    border-radius : 4px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
 }
 
 
@@ -160,9 +175,10 @@ h2, .big-text
     padding : 8px;
     border : 1px solid rgb(255 , 255 , 255);
     border-radius : 4px;
-    outline : 0;
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
+	
+	outline : 0;
 	
   	-webkit-transition: border 75ms ease-out;
 }
@@ -213,16 +229,25 @@ h2, .big-text
     opacity : 0.3;
 }
 
+.keypassEditor-PopUpPanel .level0
+{
+	display: box;
+}
+
 .keypassEditor-PopUpPanel .image
 {
 	float: right;
+
 }
 .keypassEditor-PopUpPanel .header
 {
-    padding : 3px;
+    padding : 10px;
     background : white;
-    text-align : center;
+    text-align : left;
     font-weight: bold;
+    vertical-align: middle;
+   	/*height: 93px;*/
+   	/*width:93%;*/
 }
 .keypassEditor-PopUpPanel .body
 {
@@ -241,23 +266,79 @@ h2, .big-text
 	border : 3px solid rgb(0 , 0 , 0);
     font-size : 80%;
     padding : 1px 15px;
+    margin: 0px 10px 0px;
     /*padding : 60px;*/
     /* padding-right: 50px; */
-    width :    92%;
+   width :    88%;
    /*  height   : 100%; */
     
     /* margin: auto 50px auto auto; */
 }
 
-.keypassEditor-PopUpPanel .okButton
+/* .keypassEditor-PopUpPanel .okButton
 {
     background : white;
     padding : 3px 0px 3px;
     text-align: center;
+} */
+
+/* General button defaults */
+.cerberus_button {
+	-moz-box-shadow:inset 0px 1px 0px 0px #f29c93;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #f29c93;
+	box-shadow:inset 0px 1px 0px 0px #f29c93;
+	
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b01220), color-stop(1, #5f0413) );
+	background:-moz-linear-gradient( center top, #b01220 5%, #5f0413 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b01220', endColorstr='#5f0413');
+	background-color:#5f0413;
+    
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+    
+	/*border:1px solid #d83526;*/
+	display:inline-block;
+	color:#ffffff;
+	/*font-family:arial;
+	font-size:13px;*/
+	font-weight:normal;
+	padding:6px 24px;
+	text-decoration:none;
+	/*text-shadow:1px 1px 0px #b23e35;*/
+	
+	cursor : pointer;
+	
+	vertical-align: middle;
+	
+}.cerberus_button:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #5f0413), color-stop(1, #b01220) );
+	background:-moz-linear-gradient( center top, #5f0413 5%, #b01220 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#5f0413', endColorstr='#b01220');
+	background-color:#b01220;
+}.cerberus_button:active {
+	position:relative;
+	top:1px;
 }
 
 /* GWT defaults */
 .gwt-PushButton
 {
     display : inline;
+}
+
+/* footer */
+#main-footer
+{
+	background-color:#E9EDED;
+	clear:both;
+	text-align:center;
+	margin : 36px 0 12px 0;
+}
+
+.clickableLabels
+{
+	color : rgb(0 , 0 , 204);
+	cursor : pointer;
+	text-decoration:underline;
 }

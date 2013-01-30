@@ -33,9 +33,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
+import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
-import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.web.client.CerberusWeb;
 import com.intradev.cerberus.web.client.Screen;
 import com.intradev.cerberus.web.client.code.EncodedPassword;
@@ -58,14 +58,11 @@ public class PasswordList extends Screen {
     @UiField
     PushButton createButton;
     
-    @UiField
-    PushButton setKeyCodeButton;
-    
-    private CerberusWeb masterInstance;
+    /*private CerberusWeb masterInstance;*/
 
     public PasswordList(CerberusWeb instance) {
         initWidget(uiBinder.createAndBindUi(this));
-        masterInstance = instance;
+        /*masterInstance = instance;*/
         refreshPasswords();
     }
 
@@ -74,12 +71,6 @@ public class PasswordList extends Screen {
         History.newItem("password");
     }
     
-    @UiHandler("setKeyCodeButton")
-    void onSetKeyCodeButton(ClickEvent e) {
-    	CerberusWeb.showMessage("This will allow the user to change the keypass in the future", true);
-    	masterInstance.displayRequestKeypassScreen();
-    }
-
     public void refreshPasswords() {
     	passwordList.clear();
         if (CerberusWeb.sPasswords.keySet().isEmpty()) {

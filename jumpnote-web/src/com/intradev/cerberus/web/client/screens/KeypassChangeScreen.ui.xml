@@ -11,41 +11,51 @@
          
         
         <g:HTMLPanel>
-        	<div class="level0">
-
-	            <g:Image styleName="image" resource="{res.cerberus_logo_small}"/>
-	            
+            
+            <div class="level0" >
                    	<g:Label styleName="header" ui:field="header"> 
-		        		Enter password store keycode
+		        		Change the keypass you use to secure your passwords
 					</g:Label>
-			
-
-			</div>
-			<div class="level2">		
+			</div>	
+			 <div class="level2" >
                    	<g:Label styleName="body" ui:field="currentPasswordLabel" wordWrap="true"> 
-		        		Enter the keycode you will use to unlock the passwords
-              				This keycode cannot be empty.
+		        		Enter the current keycode you use to unlock your passwords.
+					</g:Label>
+					
+                    <g:PasswordTextBox ui:field="currentPassword" styleName="textEntry"/>
+
+                    <g:Label styleName="body" ui:field="newPasswordLabel" wordWrap="true"> 
+		        		Enter the new keycode you will use to unlock your passwords. This keycode cannot be empty.
 					</g:Label>
 
+                    <g:PasswordTextBox ui:field="newPassword" styleName="textEntry"/>
+                                        
            </div>
         </g:HTMLPanel>
         <g:HTMLPanel>
-        
-        <g:PasswordTextBox ui:field="currentPassword" styleName="textEntry"/>
-        
-                                <div class="footer">  
+                        <div class="footer">  
 	                
                     	<g:PushButton ui:field="okButton" styleName="cerberus_button">
-                    	    Ok
+                    	    Change keycode
                     	    <!-- 
 						    <g:upFace image="{res.btn_create_keycode_password_off}"/>
 						    <g:upHoveringFace image="{res.btn_create_keycode_password_on}"/>
 						    <g:downFace image="{res.btn_create_keycode_password_on}"/>
 						     -->
 						</g:PushButton>
-						         
+						
+                    	<g:PushButton ui:field="cancelButton" styleName="cerberus_button">
+                    	    Cancel
+                    	    <!-- 
+						    <g:upFace image="{res.btn_create_keycode_password_off}"/>
+						    <g:upHoveringFace image="{res.btn_create_keycode_password_on}"/>
+						    <g:downFace image="{res.btn_create_keycode_password_on}"/>
+						     -->
+						</g:PushButton>
+                	              
                 </div>
         </g:HTMLPanel>
+        
         </g:VerticalPanel>
 	</g:PopupPanel>    
 	    

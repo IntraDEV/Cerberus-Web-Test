@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
@@ -37,7 +39,10 @@ import com.intradev.cerberus.allshared.JsonRpcException;
 import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.web.client.code.EncodedPassword;
 import com.intradev.cerberus.web.client.controls.Popover;
+import com.intradev.cerberus.web.client.screens.ExportDataScreen;
+import com.intradev.cerberus.web.client.screens.KeypassChangeScreen;
 import com.intradev.cerberus.web.client.screens.KeypassRequestScreen;
+import com.intradev.cerberus.web.client.screens.LegalAndInstructionsScreen;
 import com.intradev.cerberus.web.client.screens.PasswordEditor;
 import com.intradev.cerberus.web.client.screens.PasswordList;
 import com.intradev.cerberus.web.client.screens.WelcomeScreen;
@@ -92,19 +97,80 @@ public class CerberusWeb implements EntryPoint {
 			// Process userInfo RPC call results
             JSONObject userInfoJson = (JSONObject) data;
             if (userInfoJson.containsKey(CerberusProtocol.UserInfo.RET_USER)) {
-                CerberusWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
-                        CerberusProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
-                InlineLabel label = new InlineLabel();
-                label.getElement().setId("userNameLabel");
-                label.setText(sUserInfo.getNick());
-                loginPanel.add(label);
+            	{
+	                CerberusWeb.sUserInfo = (ModelJso.UserInfo) userInfoJson.get(
+	                        CerberusProtocol.UserInfo.RET_USER).isObject().getJavaScriptObject();
+	                InlineLabel label = new InlineLabel();
+	                label.getElement().setId("userNameLabel");
+	                label.setText(sUserInfo.getNick());
+	                loginPanel.add(label);
+	
+	                loginPanel.add(new InlineLabel(" | "));
+	
+	                Anchor anchor = new Anchor("Sign out",
+	                        userInfoJson.get(CerberusProtocol.UserInfo.RET_LOGOUT_URL).isString()
+	                        .stringValue());
+	                loginPanel.add(anchor);
+	                
+	                
+            	}
+            	
+            	{
+            		
 
-                loginPanel.add(new InlineLabel(" | "));
+                	
+            		final RootPanel footerPanel = RootPanel.get("main-footer");
+            		
+            		
+            		footerPanel.add(new InlineLabel(" | "));
+            		
+	                InlineLabel settingsLabel = new InlineLabel();
+	                
+	                settingsLabel.getElement().setClassName("clickableLabels");
+	                settingsLabel.setText("Settings");
+	                settingsLabel.addClickHandler(new ClickHandler() {
 
-                Anchor anchor = new Anchor("Sign out",
-                        userInfoJson.get(CerberusProtocol.UserInfo.RET_LOGOUT_URL).isString()
-                        .stringValue());
-                loginPanel.add(anchor);
+						@Override
+						public void onClick(ClickEvent event) {
+							displayChangeKeypassScreen();
+						}
+	                	
+	                });
+	                footerPanel.add(settingsLabel);
+            		
+            		footerPanel.add(new InlineLabel(" | "));
+            		
+	                InlineLabel exportLabel = new InlineLabel();
+	                exportLabel.getElement().setClassName("clickableLabels");
+	                exportLabel.setText("Export");
+	                exportLabel.addClickHandler(new ClickHandler() {
+
+						@Override
+						public void onClick(ClickEvent event) {
+							RootPanel.get("screenPanel").add(ExportDataScreen.instanciateExportDataScreen(CerberusWeb.this));
+						}
+	                	
+	                });
+	                footerPanel.add(exportLabel);
+	
+	                footerPanel.add(new InlineLabel(" | "));
+	                
+	                InlineLabel legalLabel = new InlineLabel();
+	                legalLabel.getElement().setClassName("clickableLabels");
+	                legalLabel.setText("Legal");
+	                legalLabel.addClickHandler(new ClickHandler() {
+
+						@Override
+						public void onClick(ClickEvent event) {
+							RootPanel.get("screenPanel").add(LegalAndInstructionsScreen.instanciateLegalAndInstructionsScreen(CerberusWeb.this));
+						}
+	                	
+	                });
+	                footerPanel.add(legalLabel);
+    
+            	}
+                
+                
             } else {
                 sLoginUrl = userInfoJson.get(CerberusProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
                 Anchor anchor = new Anchor("Sign in", sLoginUrl);
@@ -155,12 +221,16 @@ public class CerberusWeb implements EntryPoint {
 		}
     }
     
-    //TODO make me private
-    public void displayRequestKeypassScreen() {
-    	RootPanel.get("screenPanel").add(new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
+    private void displayRequestKeypassScreen() {
+    	RootPanel.get("screenPanel").add(KeypassRequestScreen.instanciateKeypassRequestScreen(this,new PostKeyPassRequestCallback()));
     	//History.newItem("settings");
     }
     
+    
+    private void displayChangeKeypassScreen() {
+    	RootPanel.get("screenPanel").add(KeypassChangeScreen.instanciateKeypassChangeScreen(this,new PostKeyPassRequestCallback()));
+    	//History.newItem("settings");
+    }
 
     private void performPostFetchProcessing() {
     	hideMessage();
