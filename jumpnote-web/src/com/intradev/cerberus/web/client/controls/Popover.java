@@ -24,11 +24,16 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -58,44 +63,59 @@ public class Popover extends Composite {
    
     @UiField
     PushButton deleteButton;
-
-    ActionCallback mActionCallback;
     
     
-    public static Popover createPopover(ActionCallback actionCallback, RootPanel parent, String title, String body) 
+    private HandlerRegistration handlerRegistration;
+    private RootPanel parent;
+    private Widget positionDownFrom;
+    
+    public static Popover createPopover(ActionCallback actionCallback, RootPanel parent, Widget positionDownFrom, String title, String body) 
     {
-		int pw=parent.getOffsetWidth();
-		int ph=parent.getOffsetHeight();
-		//int pl=parent.getAbsoluteLeft();
-		
+	
         Popover p=new Popover(actionCallback,parent,title,body);
         
+    	p.parent = parent;
+    	p.positionDownFrom = positionDownFrom;
 
         parent.add(p);
         
-        int pow=p.getOffsetWidth();
-        //int pow=p.getElement().getClientWidth();
-   
-        int pah=p.arrow.getOffsetHeight();
-        
-        int left=((pw-pow)/2);
-        int top = ph + pah;
-        
-        
-        parent.setWidgetPosition(p, left, top);
+        p.positionMe();
+               
         return p;
     }
+    
+    private void positionMe() {
+    	int parentLeft = positionDownFrom.getAbsoluteLeft();
+    	int parentTop = positionDownFrom.getAbsoluteTop();
+    	int parentHeight = positionDownFrom.getOffsetHeight();
+    	int parentBottom = parentTop + parentHeight;
 
-    private Popover(ActionCallback actionCallback, RootPanel parent, String title, String body) {
+        int arrowHeight= arrow.getOffsetHeight();
+
+        parent.setWidgetPosition(this, parentLeft, parentBottom + arrowHeight);
+    }
+
+    private Popover(ActionCallback actionCallback, Panel parent, String title, String body) {
         initWidget(uiBinder.createAndBindUi(this));
 
-        mActionCallback = actionCallback;
         popoverTitle.setInnerText(title);
         popoverContent.setInnerText(body);
 
         sinkEvents(Event.ONCLICK);
         
-
+        
+        handlerRegistration = Window.addResizeHandler(new ResizeHandler() {           
+            @Override
+            public void onResize(ResizeEvent event) {
+            	Popover.this.positionMe();
+            }
+        });
+       
+    }
+    
+    public void terminate() {
+    	this.handlerRegistration.removeHandler();
+    	this.removeFromParent();
     }
 
     @Override
@@ -110,7 +130,7 @@ public class Popover extends Composite {
 
     @UiHandler("deleteButton")
     void onEditClick(ClickEvent e) {
-    	this.removeFromParent();
+    	terminate();
         e.stopPropagation();
     }
 

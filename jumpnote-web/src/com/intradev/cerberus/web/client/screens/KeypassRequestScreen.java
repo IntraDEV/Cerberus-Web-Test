@@ -20,9 +20,11 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.intradev.cerberus.web.client.CerberusWeb;
+import com.intradev.cerberus.web.client.OnboardingPopupManager;
 import com.intradev.cerberus.web.client.Screen;
 import com.intradev.cerberus.web.client.code.EncodedPassword;
 import com.intradev.cerberus.web.client.code.PasswordDecoderFactory;
+import com.intradev.cerberus.web.client.controls.Popover;
 
 /**
  * The welcome screen, containing a simple message indicating that the user needs to sign in
@@ -56,6 +58,7 @@ public class KeypassRequestScreen extends Screen {
     private ClickHandler listener;
     private HandlerRegistration handlerRegistration;
     /*private CerberusWeb masterInstance;*/
+    private Popover onboardingPopover;
     
     
     public static KeypassRequestScreen instanciateKeypassRequestScreen(CerberusWeb instance, final PopupCompleteCallback callback) {
@@ -76,13 +79,7 @@ public class KeypassRequestScreen extends Screen {
         initWidget(uiBinder.createAndBindUi(this));
         /*this.masterInstance = instance;*/
     	this.callback = callback;
-    	
-/*        if (CerberusWeb.sPasswords.size() == 0) {
-        	popup.setTitle("Enter the keycode you will use to unlock your password store");
-        } else {
-        	popup.setTitle("Enter the keycode to unlock your password store");     	
-        }*/
-       
+
 
         SubmitListener sl = new SubmitListener();
 
@@ -100,17 +97,19 @@ public class KeypassRequestScreen extends Screen {
         popup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
           public void setPosition(int offsetWidth, int offsetHeight) {
            	popup.center();
-           	currentPassword.getElement().focus();
+           	currentPassword.getElement().focus();            
           }
         });
 
         handlerRegistration = Window.addResizeHandler(new ResizeHandler() {           
             @Override
             public void onResize(ResizeEvent event) {
-               	popup.center();
+               	popup.center();               	
             }
         });
         
+        
+        onboardingPopover=OnboardingPopupManager.getOnboardingPopupManager().showWhyKeypass(this.okButton);
         
     }
     
@@ -138,6 +137,9 @@ public class KeypassRequestScreen extends Screen {
 		callback.popupComplete();
 		handlerRegistration.removeHandler();
 		popup.hide();
+		if (onboardingPopover != null) {
+			onboardingPopover.terminate();
+		}
 		//Remove ourselves from the parent
 		this.removeFromParent();
     }
@@ -163,6 +165,6 @@ public class KeypassRequestScreen extends Screen {
 			}	
 		}
     }
+ 
     
-
 }

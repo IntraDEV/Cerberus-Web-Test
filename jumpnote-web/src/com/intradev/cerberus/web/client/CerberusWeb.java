@@ -34,11 +34,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.allshared.JsonRpcClient;
 import com.intradev.cerberus.allshared.JsonRpcException;
-import com.intradev.cerberus.allshared.CerberusProtocol;
 import com.intradev.cerberus.web.client.code.EncodedPassword;
-import com.intradev.cerberus.web.client.controls.Popover;
 import com.intradev.cerberus.web.client.screens.ExportDataScreen;
 import com.intradev.cerberus.web.client.screens.KeypassChangeScreen;
 import com.intradev.cerberus.web.client.screens.KeypassRequestScreen;
@@ -175,6 +174,11 @@ public class CerberusWeb implements EntryPoint {
                 sLoginUrl = userInfoJson.get(CerberusProtocol.UserInfo.RET_LOGIN_URL).isString().stringValue();
                 Anchor anchor = new Anchor("Sign in", sLoginUrl);
                 loginPanel.add(anchor);
+                
+        		{
+        			OnboardingPopupManager.getOnboardingPopupManager().showWhyLogin(anchor);
+        		}
+                
             }
             
             runStateMachine();
@@ -222,14 +226,12 @@ public class CerberusWeb implements EntryPoint {
     }
     
     private void displayRequestKeypassScreen() {
-    	RootPanel.get("screenPanel").add(KeypassRequestScreen.instanciateKeypassRequestScreen(this,new PostKeyPassRequestCallback()));
-    	//History.newItem("settings");
+    	KeypassRequestScreen.instanciateKeypassRequestScreen(this,new PostKeyPassRequestCallback());
     }
     
     
     private void displayChangeKeypassScreen() {
     	RootPanel.get("screenPanel").add(KeypassChangeScreen.instanciateKeypassChangeScreen(this,new PostKeyPassRequestCallback()));
-    	//History.newItem("settings");
     }
 
     private void performPostFetchProcessing() {
@@ -238,27 +240,15 @@ public class CerberusWeb implements EntryPoint {
     	case STATE_REQUESTING_USERINFO:
     		RootPanel.get("screenPanel").add(new WelcomeScreen(sLoginUrl));
     		break;
-    	case STATE_FETCHING_PASSWORDS:
-//    		mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
-//    		mScreenContainer.setDefault("settings");
-//    		mScreenContainer.install(RootPanel.get("screenPanel"));    		
+    	case STATE_FETCHING_PASSWORDS:	
     		displayRequestKeypassScreen();
     		break;
     	case STATE_REQUESTING_KEYCODE:
     		mScreenContainer.addScreen("home", new PasswordList(this));
     		mScreenContainer.addScreen("password", new PasswordEditor(this));
-    		//mScreenContainer.addScreen("settings", new KeypassRequestScreen(this,new PostKeyPassRequestCallback()));
     		mScreenContainer.setDefault("home");
     		mScreenContainer.install(RootPanel.get("screenPanel"));
-    		
-    		
-    		{
-    			final RootPanel loginPanel = RootPanel.get("loginPanel");
 
-    			Popover.createPopover(null,loginPanel,"title", "body");
-    			
-    		}
-    	        
     		break;
     	}
 
