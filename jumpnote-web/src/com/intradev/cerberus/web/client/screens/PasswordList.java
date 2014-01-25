@@ -88,7 +88,7 @@ public class PasswordList extends Screen {
 
             Collections.sort(passwords, new Comparator<EncodedPassword>() {
                 public int compare(EncodedPassword o1, EncodedPassword o2) {
-                    return o1.getTitle().compareTo(o2.getTitle());
+                    return o1.getTitle().compareToIgnoreCase(o2.getTitle());
                 }
             });
 
